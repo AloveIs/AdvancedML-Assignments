@@ -103,6 +103,9 @@ e^{-tr(\frac{1}{2 \sigma^2} \mathbf{T}^T\mathbf{T} + \frac{1}{2\tau^2}W_0 W_0^T)
 Where we substituted $\sum_i{\mathbf{x_i} \mathbf{t_i}^T}$ with $\mathbf{X}^T \mathbf{T}$.
 This can be demostrated to be true, and so I do in appendix A.
 
+Now we can retrieve the variance and the mean of our prior.
+
+
 ### Question 6
 
 
