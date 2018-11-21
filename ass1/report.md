@@ -126,8 +126,30 @@ Now we can retrieve the variance and the mean of our prior.
 
 ### Question 12
 
+The preference is that our variable X is symmetric, independent, and close to zero
 
 ### Question 13
+
+Since the model is:
+
+$$\mathbf{y_i} = \mathbf{W x_i} + \varepsilon$$
+
+The mean of each $\mathbf{y_i}$ is :
+
+$$\EX(\mathbf{Y}) = \EX(\mathbf{W X} + \varepsilon)$$
+$$\EX_X(\mathbf{Y}) = \EX_X(\mathbf{W X}) + \EX_X(\varepsilon)$$
+$$\EX_X(\mathbf{Y}) = 0 + 0$$
+
+We can describe the probability by only the first 2 moments of the random variable:
+
+$$\mathrm{Var}(\mathbf{Y}) = \mathrm{Var}(\mathbf{W X} + \varepsilon)$$
+
+Since they are uncorrelated, we can write:
+
+
+$$\mathrm{Var}(\mathbf{Y}) = \mathrm{Var}(\mathbf{W X}) + \mathrm{Var}(\varepsilon)$$
+$$\mathrm{Var}(\mathbf{Y}) = W \mathrm{Var}(\mathbf{X}) W^T + \sigma^2 \mathbf{I}$$
+
 
 
 ### Question 14
@@ -141,6 +163,7 @@ Now we can retrieve the variance and the mean of our prior.
 
 ### Question 17
 
+This is the simples model because it is uninformative, each data set is equally likely.
 
 ### Question 18
 
