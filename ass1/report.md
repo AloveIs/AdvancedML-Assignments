@@ -2,7 +2,9 @@
 title : Assignment 1 - Report 
 author : Pietro Alovisi
 date : 11-17-2018
+header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left\lVert#1\right\rVert}
 ---
+
 
 ### Question 1
 
@@ -49,20 +51,43 @@ Where we substituted the expression at the exponent $\sum_i^N{(\mathbf{Wx_i-t_i}
 
 
 
-
-
 ### Question 4
 
-Using $L_1$ norm will perform some kind of dimensionality reduction by setting some variables to 0. 
+The two penalization terms can be obtained from the prior. First let's do the one for the $L_2$ norm, and then we will generalize to the $L_1$. We can write the prior on $W$ as:
 
-The two penalization terms are:
+$$p(W)= \frac{1}{\tau^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{tr((W-W_0)(W-W_0)^T)}{2\tau^2}} = \frac{1}{\tau^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{\sum_i^N{w_i^T \cdot w_i}}{2\tau^2}} $$
+
+If we multiply with the expression computed above for the lykelyhood $p(\mathbf{T}|\mathbf{X}, \mathbf{W})$ we get:
 
 
-$$p(W)= \frac{1}{\sigma^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{tr((W-W_0)(W-W_0)^T)}{2\tau^2}}$$
+$$ p(\mathbf{W}|\mathbf{X}, \mathbf{T}) \propto e^{-\frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}-\frac{1}{2\tau^2}\sum_i^N{w_i^T \cdot w_i}}$$
+
+Where w have disregarded the multiplicatove factor in front of the exponent, because by taking the log will lead to a costant factor. Now we take the negative logarithm:
+
+$$-log(p(\mathbf{W}|\mathbf{X}, \mathbf{T})) \propto \frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})} + \frac{1}{2\tau^2}\sum_i^N{w_i^T \cdot w_i}$$
+
+Where we can easily see the penalizing factor:
+
+$$\frac{1}{2\tau^2}\sum_i^N{w_i^T \cdot w_i} = \frac{1}{2\tau^2}\sum_i^N{\norm{w_i}_{L_2}}$$
+
+Of course the proper extension to the $L_1$ norm will lead to the penalizing term:
+
+$$\frac{1}{2\tau^2}\sum_i^N{|w_i|} = \frac{1}{2\tau^2}\sum_i^N{\norm{w_i}_{L_1}}$$
+
+
+Using $L_1$ norm will perform some kind of dimensionality reduction by setting some variables to 0, while the quadratic term will try to balanced the parameter.
+We can see this effect by inspecting the derivative of the penalizing term: for the $L1$ norm it is always constant, while for the $L2$ it decreases as we get closer to zero, this means that in $L2$ optimizing values that are close to the origin does not get me any decrease in the penalazing term, while if I take a value far away from the origin then this will decrease a lot my penalizing term. 
+
+We can aslo see visually by looking at the iso-contours of these functions in figure \ref{I_question4}.
+
+![Showing L1 and L2 differences.\label{I_question4}](images/question4.pdf)
+
+We can see that the corners of the square lie on the axis, so where one of the two variables is zero.
 
 $w^Tw$ : for the $L_2$ norm which is just the Froebenius norm
-$|w|$
+$|w|_F$
 
+These two priors will introduce an additive term depending on the model parameter $|w|$, which would be of second order for the $L_2$ metric, and a first order $L_1$ for the other one.
 
 ### Question 5
 
@@ -108,12 +133,41 @@ Now we can retrieve the variance and the mean of our prior.
 
 ### Question 6
 
+To comment the prior we will analize its two components.
+The least important is the mean, which is set arbitrarely to 0, which means that the functions we'll have zero mean.
+The most important component is the covariance, that is computed as a kernel function. The kernel function should implement some kind of "closeness measure" between two points $x_i$ and $x_j$, with the kernel having high values id $x_i$ is similar to $x_j$, low otherwise. This function sets the correlation between two points, so if $x_i$ and $x_j$ are close, their values will be high correlated, on the opposite side if $k(x_i,x_j)=0$, then the two values $y_i$ and $y_j$ are independent (works only assuming the distribution normal).
+Basically the covariance function defines a transfer of information between one point and the other.
+
+##### Put figure(s) here
+
 
 ### Question 7
+
+If we also assume that $\mathbf{X}$ and $\mathbf{\theta}$ are random variables, we can easily decompose the formula into:
+
+$$ p(\mathbf{T}, \mathbf{X}, \mathbf{f}, \mathbf{\theta}) = p(\mathbf{T}, \mathbf{f}|\mathbf{X}, \mathbf{\theta})p(\mathbf{X},\mathbf{\theta})$$
+
+Moreover it's safe to assume that $\mathbf{X}$ and $\mathbf{\theta}$ are independent, which lets me factor even more the formula into:
+
+$$ p(\mathbf{T}, \mathbf{f}|\mathbf{X}, \mathbf{\theta})p(\mathbf{\mathbf{X},\theta}) = p(\mathbf{T}, \mathbf{f}|\mathbf{X}, \mathbf{\theta})p(\mathbf{X})p(\mathbf{\theta})$$
+
+I can use the chain rule one again on the first term to get:
+
+$$p(\mathbf{T}, \mathbf{f}|\mathbf{X}, \mathbf{\theta})p(\mathbf{X})p(\mathbf{\theta}) = p(\mathbf{T}| \mathbf{f},\mathbf{X},\mathbf{\theta})p(\mathbf{f}|\mathbf{X},\mathbf{\theta})p(\mathbf{X})p(\mathbf{X})p(\mathbf{\theta})$$
+
+Where we know that $p(\mathbf{f}|\mathbf{X},\mathbf{\theta})$ is a multivariate normal distribution for the definition of the gaussian processes.
+While the term $p(\mathbf{T}| \mathbf{f},\mathbf{X},\mathbf{\theta})$ can be further expanded using the relation between $t_i$ and $f_i$ which, being conditioned is known. 
+$$ p(\mathbf{t_i} = t^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta}) = p(f^* + \varepsilon = t^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta}) = p(\varepsilon = t^* - f^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta})$$
+
+So it distributes just like the error $\varepsilon$.
 
 
 ### Question 8
 
+$$p(\mathbf{T}| \mathbf{X}, \mathbf{\theta}) = \int{p(\mathbf{T}|\mathbf{f}, \mathbf{X}, \mathbf{\theta})p(\mathbf{f}| \mathbf{X}, \mathbf{\theta}) df}$$
+
+We still condition in $\theta$ because we assumed it as a constant, it could be marginalized if we have had assumed it was a random variable.
+In this form is useful for hyperparameter optimization.
 
 ### Question 9
 
@@ -208,10 +262,10 @@ $$\mathbf{X} =
 \begin{bmatrix}\mathbf{0}^T\\ \mathbf{x_2}^T\\ \dots\\ \mathbf{0}^T\\ 
 \end{bmatrix}
 +\dots+
-\begin{bmatrix}\mathbf{0}^T\\ \mathbf{0}^T\\ \dots\\ \mathbf{x_n}^T\\ 
-\end{bmatrix}$$
+\begin{bmatrix}\mathbf{0}^T\\ \mathbf{0}^T\\ \dots\\ \mathbf{x_n}^T\\ \end{bmatrix}$$
 
 From the previous it immediatly follows that its transpose can be expressed as:
+
 $$\mathbf{X}^T = 
 \begingroup
 \setlength\arraycolsep{2pt}
