@@ -171,16 +171,23 @@ In this form is useful for hyperparameter optimization.
 
 ### Question 9
 
+![Prior over the parameters](images/prior.pdf)
+##### Which varianc eof the prior should I choose?
+
+![Posterior over the parameters after observing one point](images/posterior_1.pdf)
 
 ### Question 10
 
+The lenghtscale defines a "unit of measure" between the two points. Since it divides the difference between two points, if the lenghtscale is low the two points will be less correlated, if the value of the lenghtscale is high, then they will be highly correlated.
+
+![Samples from a gaussian process](images/gp_samples.pdf)
 
 ### Question 11
 
 
 ### Question 12
 
-The preference is that our variable X is symmetric, independent, and close to zero
+The preference is that our variable $X$ is a normal distribution whose elemetns are independent, and distribute around zero.
 
 ### Question 13
 
@@ -190,24 +197,74 @@ $$\mathbf{y_i} = \mathbf{W x_i} + \varepsilon$$
 
 The mean of each $\mathbf{y_i}$ is :
 
-$$\EX(\mathbf{Y}) = \EX(\mathbf{W X} + \varepsilon)$$
-$$\EX_X(\mathbf{Y}) = \EX_X(\mathbf{W X}) + \EX_X(\varepsilon)$$
-$$\EX_X(\mathbf{Y}) = 0 + 0$$
+$$\EX(\mathbf{y_i}) = \EX(\mathbf{W x_i} + \varepsilon)$$
+$$\EX_X(\mathbf{y_i}) = \mathbf{W}\EX_X(\mathbf{x_i}) + \EX_X(\varepsilon)$$
+$$\EX_X(\mathbf{y_i}) = 0 + 0$$
 
 We can describe the probability by only the first 2 moments of the random variable:
 
-$$\mathrm{Var}(\mathbf{Y}) = \mathrm{Var}(\mathbf{W X} + \varepsilon)$$
+$$\mathrm{Var}(\mathbf{y_i}) = \mathrm{Var}(\mathbf{W x_i} + \varepsilon)$$
+
 
 Since they are uncorrelated, we can write:
 
 
-$$\mathrm{Var}(\mathbf{Y}) = \mathrm{Var}(\mathbf{W X}) + \mathrm{Var}(\varepsilon)$$
-$$\mathrm{Var}(\mathbf{Y}) = W \mathrm{Var}(\mathbf{X}) W^T + \sigma^2 \mathbf{I}$$
+$$\mathrm{Var}(\mathbf{y_i}) = \mathrm{Var}(\mathbf{W x_i}) + \mathrm{Var}(\varepsilon)$$
+$$\mathrm{Var}(\mathbf{y_i}) = \mathbf{W} \mathrm{Var}(\mathbf{x_i}) \mathbf{W}^T + \sigma^2 \mathbf{I} = \mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}$$
 
+Since each $y_i$ is independent with each other, we can combine the results we got into the distribution:
+
+$$p(\mathbf{Y}| \mathbf{W}) = \prod_i^N{ \mathcal{N}(\mathbf{y_i}|\mathbf{0},\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})}$$
+
+$$p(\mathbf{Y}| \mathbf{W}) \sim \mathcal{N}(\mathbf{0},\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}, \mathbf{I})$$
 
 
 ### Question 14
 
+#### MLE
+
+From the derived distribution in question 3 we can compute the log likelihood:
+
+$$log(p(\mathbf{Y}|\mathbf{X}, \mathbf{W})) = log \left( \frac{1}{\sigma^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}} \right) =$$ 
+$$ = - log \left(\sigma^2(2\pi)^{\frac{D}{2}} \right) -\frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}$$
+
+In the maximization we disregard the constant factor $- log \left(\sigma^2(2\pi)^{\frac{D}{2}} \right)$ ,and then remove also the multiplicative constant in the second term $\frac{1}{2\sigma^2}$. So we are left with the maximization of:
+
+$$\arg\max_W-\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}$$
+
+Which is clealy the generalization of the sum of residual square for vectorial outputs. 
+
+
+#### MAP
+
+We can derive the expression starting from the previous part of the question.
+$$log \left (p(\mathbf{Y}|\mathbf{X}, \mathbf{W})\cdot p(\mathbf{W})\right ) = log(p(\mathbf{Y}|\mathbf{X}, \mathbf{W})) + log(p(\mathbf{W}))$$
+
+The first term of the summation is the MLE term from before, while the second one I have already computed in qustion 4 as:
+
+$$log(p(\mathbf{W})) = - log \left( \tau^2(2\pi)^{\frac{D}{2}}\right) -\frac{1}{2\tau^2}\sum_i^N{(\mathbf{w_i})^T(\mathbf{w_i})}$$ 
+
+Again we can disregard the constant term at the begining, but we need to keep the multiplicative terms both for the prior and for the least square. Putting everything together we get:
+
+$$\arg\max_W \left\{ -\frac{1}{2\sigma^2} \sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})} -\frac{1}{2\tau^2}\sum_i^N{(\mathbf{w_i})^T(\mathbf{w_i})}\right\}$$
+
+Where the second term acts as a reguralizing term.
+
+#### Type II ML
+
+$$log\left( \int p(\mathbf{Y}|\mathbf{X}, \mathbf{W})p(\mathbf{X}) d\mathbf{X}\right) =
+log \left( p(\mathbf{Y}|\mathbf{W}) \right) = $$
+$$log \left( \prod_{i=0}^{N} p(\mathbf{y_i}|\mathbf{x_i}, \mathbf{W}) \right) =$$
+$$ = \sum_{i=0}^{N} log \left( p(\mathbf{y_i}|\mathbf{x_i}, \mathbf{W})\right)  =$$
+
+If we substitute with the expression for $p(\mathbf{y_i}|\mathbf{x_i}, \mathbf{W})$ we still have a log of a normal distribution.
+
+$$ = - \sum_{i=0}^{N} log \left((det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}) 2\pi^D)^{\frac{1}{2}} \right) -\sum_{i=0}^{N}{\mathbf{y_i}^T (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \mathbf{y_i} }$$
+---
+
+The two expression in equation 25 are equal because the denominator (the evidence) is constant for any choice of the model parameter $W$. The evidence only changes if we choose another model.
+
+Type-II Maximum-Likelihood is a sensible way of learning the parameters because we first use the bayesian approach to avoid the overfit on data, and then we maximize the hyperparameter, which cannot overfit, because it is not backed by data.
 
 ### Question 15
 
