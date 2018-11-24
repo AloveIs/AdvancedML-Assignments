@@ -43,18 +43,6 @@ class GP_posterior:
         self.data_x = None
         self.data_t = None
 
-    def sample_posterior(self,x):
-        pass
-
-    def sample_predictive_mean(self,x):
-        #m(x) = K^T Cn^-1 t
-
-
-        K = None
-
-        self.pred_mean = None
-
-        pass
 
     def compute_prior(self):
         self.prior = GP_prior(self.sigma,self.lenghtscale)

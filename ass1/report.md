@@ -4,23 +4,27 @@ author : Pietro Alovisi
 date : 11-17-2018
 header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left\lVert#1\right\rVert}
 ---
+### Todo
 
+ - finire risposta 4
+ - check e finire risposta 5
+ - question 6 mettere una immagine della marginale
+ - domanda 9, che varianza scegliere nel prior?
+ - domanda 9 rifare i calcoli per fgare unn sample delle rette
+ 
 
 ### Question 1
 
-The gaussian function is a unimodal distribution, which means that has only one mode and for this particular distribution it coincides with the mean. So in this case we are assuming that value of the deterministic function $f$ for a given $\mathbf{x}$ is the mean value of the distribution of the target.
-This can be rephrased as assuming a determinsitic model $f(\mathbf{x})$ that generates realizations with a random error $\varepsilon$ that distributes as $\varepsilon \sim \mathcal{N}(0,\sigma^{2} \mathbf{I})$.
-Putting everyting togheter we get:
+Choosing the gaussian distribution means that the vaules $t_i$ is distributed simmetrically around the true determinsitic function. because the gaussian distribution is a unimodal distribution, which means that has only one mode and for this particular distribution it coincides with the mean.
+This can be rephrased as assuming a determinsitic model $f(\mathbf{x})$ that generates realizations with a random error $\varepsilon$ that distributes as $\varepsilon \sim \mathcal{N}(0,\sigma^{2} \mathbf{I})$. This can be written as:
 
-$$ \mathbf{t} = f(\mathbf{x}) + \varepsilon $$
+$$ \mathbf{t} = f(\mathbf{x}) + \varepsilon  \,\,\,\,\,\,\,\,\varepsilon \sim \mathcal{N}(0,\sigma^{2} \mathbf{I})$$
 
-A prior oservation about the covariance is that we are assuming homoscedasticity, that is the variance of $\mathbf{t}$ is not dependent on the input vector $\mathbf{x}$.
+A prior oservation about the covariance matrix is that it is constant, it does not dependent on the input vector $\mathbf{x}$. Then the spherical covariance matrix implies two facts:
 
-The spherical covariance matrix means implies two facts:
+ - All the scalar random variables $t_ij$ of the vector $\mathbf{t_i}$ have the same variance $\sigma^2$ (called homoscedasticity).
 
- - All the scalar random variables $t_j$ of the vector $\mathbf{t_i}$ have the same variance $\sigma^2$.
-
- - The fact that the covariance matrix is diagonal means that all the output sclar component $t_j$ of the vector $\mathbf{t_i}$ are independent one another.
+ - The fact that the covariance matrix is diagonal means that all the output scalar component $t_ij$ of the vector $\mathbf{t_i}$ are independent one another.
 
 ### Question 2
 
@@ -36,15 +40,16 @@ Equation 5 is a linear transformation of a normal distribution which, from its p
 
 $$p(\mathbf{t_i}) \sim \mathcal{N}(\mathbf{W}\,\mathbf{x_i},\sigma^{2} \mathbf{I})$$
 
-Still assuming conditionally independent samples, from 3 the likelyhood is just:
+Still assuming conditionally independent samples, from Eq. 3 the likelihood is just:
 
 $$p(\mathbf{T}|\mathbf{X}, \mathbf{W}) = \prod_{i = 1}^{N}{\mathcal{N}(\mathbf{t_i}|\mathbf{W}\, \mathbf{x_i},\sigma^{2} \mathbf{I})}$$ 
  
-Which we can also write by vectorising the whole, by noting that since all the $\mathbf{t_i}$ have the same variance, the exponents in the probability density function sum up.
+Which we can also write by expanding the whole product, by noting that since all the $\mathbf{t_i}$ have the same variance, the exponents in the probability density function sum up.
 
-$$p(\mathbf{T}|\mathbf{X}, \mathbf{W}) = \mathcal{N}(\mathbf{X}\mathbf{W}^T,\mathbf{I},\sigma^{2} \mathbf{I})=$$
-$$= \frac{1}{\sigma^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}} =$$
-$$=\frac{1}{\sigma^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{1}{2\sigma^2}Tr\bigr((\mathbf{XW^T-T})(\mathbf{XW^T-T})^T\bigr)}$$ 
+$$p(\mathbf{T}|\mathbf{X}, \mathbf{W}) = \prod_{i = 1}^{N}{\frac{1}{\sigma^D (2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{1}{2\sigma^2}(\mathbf{t_i-Wx_i})^T(\mathbf{t_i-Wx_i})}} =$$
+$$= \frac{1}{\sigma^{ND} (2\pi)^{\frac{ND}{2}}} \cdot e^{-\frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}} =$$
+$$=\frac{1}{\sigma^{ND} (2\pi)^{\frac{ND}{2}}} \cdot e^{-\frac{1}{2\sigma^2}Tr\bigr((\mathbf{XW^T-T})(\mathbf{XW^T-T})^T\bigr)}=$$
+$$ = \mathcal{N}(\mathbf{X}\mathbf{W}^T,\mathbf{I},\sigma^{2} \mathbf{I})$$ 
 
 
 Where we substituted the expression at the exponent $\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}$ with $Tr\bigr((\mathbf{XW^T-T})(\mathbf{XW^T-T})^T\bigr)$ by noting that the summation is just the sum of the diagonal of the matrix $(\mathbf{XW^T-T})(\mathbf{XW^T-T})^T$.
@@ -57,7 +62,7 @@ The two penalization terms can be obtained from the prior. First let's do the on
 
 $$p(W)= \frac{1}{\tau^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{tr((W-W_0)(W-W_0)^T)}{2\tau^2}} = \frac{1}{\tau^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{\sum_i^N{w_i^T \cdot w_i}}{2\tau^2}} $$
 
-If we multiply with the expression computed above for the lykelyhood $p(\mathbf{T}|\mathbf{X}, \mathbf{W})$ we get:
+If we multiply with the expression computed above for the likelihood $p(\mathbf{T}|\mathbf{X}, \mathbf{W})$ we get:
 
 
 $$ p(\mathbf{W}|\mathbf{X}, \mathbf{T}) \propto e^{-\frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}-\frac{1}{2\tau^2}\sum_i^N{w_i^T \cdot w_i}}$$
@@ -78,7 +83,7 @@ $$\frac{1}{2\tau^2}\sum_i^N{|w_i|} = \frac{1}{2\tau^2}\sum_i^N{\norm{w_i}_{L_1}}
 Using $L_1$ norm will perform some kind of dimensionality reduction by setting some variables to 0, while the quadratic term will try to balanced the parameter.
 We can see this effect by inspecting the derivative of the penalizing term: for the $L1$ norm it is always constant, while for the $L2$ it decreases as we get closer to zero, this means that in $L2$ optimizing values that are close to the origin does not get me any decrease in the penalazing term, while if I take a value far away from the origin then this will decrease a lot my penalizing term. 
 
-We can aslo see visually by looking at the iso-contours of these functions in figure \ref{I_question4}.
+We can also see visually by looking at the iso-contours of these functions in figure \ref{I_question4}.
 
 ![Showing L1 and L2 differences.\label{I_question4}](images/question4.pdf)
 
@@ -93,13 +98,13 @@ These two priors will introduce an additive term depending on the model paramete
 
 We will use the square completion to perform this task. So we assume that the output is normal with the following parametrs:
 
-$$p(W) = \frac{1}{\xi} \cdot e^{-tr((W-W_0)\Sigma^{-1}(W-W_0)^T)} =$$
+$$p(W) = \frac{1}{\xi} \cdot e^{-\frac{1}{2}tr(V^{-1}(W-W_0)\Sigma^{-1}(W-W_0)^T)} =$$
 
-$$ =\frac{1}{\xi} \cdot e^{-tr(W\Sigma^{-1}W^T)}e^{2 \cdot tr(W\Sigma^{-1}W_0^T)}e^{-tr(W_0\Sigma^{-1}W_0^T)}$$
+$$ =\frac{1}{\xi} \cdot e^{-\frac{1}{2}tr(V^{-1}W\Sigma^{-1}W^T)}e^{\cdot tr(V^{-1} W\Sigma^{-1}W_0^T)}e^{-\frac{1}{2}tr(V^{-1} W_0\Sigma^{-1}W_0^T)}$$
 
 Where $\xi$ is just the normlaizing factor to make the integral of the function 1.
 
-Now we will take the product of the prior over $W$, and the likelyhood $p(\mathbf{t_i}|\mathbf{x_i}, \mathbf{W})$.
+Now we will take the product of the prior over $W$, and the likelihood $p(\mathbf{t_i}|\mathbf{x_i}, \mathbf{W})$.
 
 $$ p(\mathbf{t_i}) = e^{-\frac{1}{2 \sigma^2} (\mathbf{t_i}-W\mathbf{x_i})^T(\mathbf{t_i}-W\mathbf{x_i})} \cdot e^{-\frac{1}{2\tau^2}tr((W-W_0)(W-W_0)^T)}  $$
 $$= e^{-\frac{1}{2 \sigma^2} tr((\mathbf{t_i}-W\mathbf{x_i})(\mathbf{t_i}-W\mathbf{x_i})^T)} \cdot e^{-\frac{1}{2\tau^2}tr((W-W_0)(W-W_0)^T)}  $$
@@ -130,20 +135,24 @@ This can be demostrated to be true, and so I do in appendix A.
 
 Now we can retrieve the variance and the mean of our prior.
 
+$$\EX(\mathbf{W}|\mathbf{T},\mathbf{X}) = $$
+$$\mathrm{Var}(\mathbf{W}|\mathbf{T},\mathbf{X}) = $$
+
+Z represents the regularizing term for our posterior distribution and, from Bayes rule, it must be equal to the evidence. But we are not intrested in it for the computation of the posterior, and it does not affect our derivation.
 
 ### Question 6
 
-To comment the prior we will analize its two components.
+This is a prior on functions, where a function is seen as a collection of infinite random variables, and for any subset of it the joint probability is a multivariate gaussian. To comment the prior we will analize its two components.
 The least important is the mean, which is set arbitrarely to 0, which means that the functions we'll have zero mean.
 The most important component is the covariance, that is computed as a kernel function. The kernel function should implement some kind of "closeness measure" between two points $x_i$ and $x_j$, with the kernel having high values id $x_i$ is similar to $x_j$, low otherwise. This function sets the correlation between two points, so if $x_i$ and $x_j$ are close, their values will be high correlated, on the opposite side if $k(x_i,x_j)=0$, then the two values $y_i$ and $y_j$ are independent (works only assuming the distribution normal).
-Basically the covariance function defines a transfer of information between one point and the other.
+Basically the covariance function defines a transfer of information between one point and the other based on their distance.
 
 ##### Put figure(s) here
 
 
 ### Question 7
 
-If we also assume that $\mathbf{X}$ and $\mathbf{\theta}$ are random variables, we can easily decompose the formula into:
+If we also assume that $\mathbf{X}$ and $\mathbf{\theta}$ are random variables, we can apply the chain rule and easily decompose the formula into:
 
 $$ p(\mathbf{T}, \mathbf{X}, \mathbf{f}, \mathbf{\theta}) = p(\mathbf{T}, \mathbf{f}|\mathbf{X}, \mathbf{\theta})p(\mathbf{X},\mathbf{\theta})$$
 
@@ -156,25 +165,36 @@ I can use the chain rule one again on the first term to get:
 $$p(\mathbf{T}, \mathbf{f}|\mathbf{X}, \mathbf{\theta})p(\mathbf{X})p(\mathbf{\theta}) = p(\mathbf{T}| \mathbf{f},\mathbf{X},\mathbf{\theta})p(\mathbf{f}|\mathbf{X},\mathbf{\theta})p(\mathbf{X})p(\mathbf{X})p(\mathbf{\theta})$$
 
 Where we know that $p(\mathbf{f}|\mathbf{X},\mathbf{\theta})$ is a multivariate normal distribution for the definition of the gaussian processes.
-While the term $p(\mathbf{T}| \mathbf{f},\mathbf{X},\mathbf{\theta})$ can be further expanded using the relation between $t_i$ and $f_i$ which, being conditioned is known. 
+While we can get some insights in the term $p(\mathbf{T}| \mathbf{f},\mathbf{X},\mathbf{\theta})$ by looking at the relation between $t_i$ and $f_i$. Since $t_i$ depends on  $f_i$ and the latter, being conditioned, is known.
+
 $$ p(\mathbf{t_i} = t^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta}) = p(f^* + \varepsilon = t^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta}) = p(\varepsilon = t^* - f^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta})$$
+So this term is also gaussian.
 
-So it distributes just like the error $\varepsilon$.
-
+![Graphical model of the assumption I made about the variables](images/variable_gm.pdf){ width=40% }
 
 ### Question 8
 
 $$p(\mathbf{T}| \mathbf{X}, \mathbf{\theta}) = \int{p(\mathbf{T}|\mathbf{f}, \mathbf{X}, \mathbf{\theta})p(\mathbf{f}| \mathbf{X}, \mathbf{\theta}) df}$$
 
-We still condition in $\theta$ because we assumed it as a constant, it could be marginalized if we have had assumed it was a random variable.
-In this form is useful for hyperparameter optimization.
+The integral has the meaning of a weighted average of the likelyhood of the data over all possible function, where the weight is given by the prior on the functions.
+The uncertainty is reflected in the covariance matrix of the marginalized distribution, and it has 2 independent components: one comes from the noise $\varepsilon$, and the other comes from the uncertainty we have on the data that is can be seen as uncertainty on the shape of the functions of the gaussian process that we marginalize out.
+We still condition in $\theta$ because we assumed it as a constant, it could be marginalized if we have had assumed it was a random variable. In this form the marginal distribution is a function of $\theta$, which is useful for performing hyperparameter optimization.
 
 ### Question 9
 
 ![Prior over the parameters](images/prior.pdf)
-##### Which varianc eof the prior should I choose?
 
-![Posterior over the parameters after observing one point](images/posterior_1.pdf)
+
+![Posterior over the parameters after observing one point with $\sigma = 0.1$](images/posterior_2_v01.pdf)
+
+There are 2 main effects in adding data to my model :
+
+ - The first one is the fact that the posterior moves its center towards the true value of my weights pair
+ - The variance of the posterior shrinks as I add more points
+
+These two effects can be explained easily. The latter occurs because as we get more data we are more certain about the model, our belief increases, and so our variance reduces. This rate of change depends on the noise in our data.
+The first effect is determined by the fact that our belief changes as we see more points. Starting from the prior at the origin, we move towards the pair that better fits our data. The prior encodes some bias that fades away as we get more and more points.
+
 
 ### Question 10
 
@@ -274,7 +294,7 @@ Type-II Maximum-Likelihood is a sensible way of learning the parameters because 
 
 ### Question 17
 
-This is the simples model because it is uninformative, each data set is equally likely.
+This is the simples model because it is uninformative, each data set is equally likely. This means that
 
 ### Question 18
 
@@ -289,6 +309,15 @@ This is the simples model because it is uninformative, each data set is equally 
 
 
 ### Question 22
+
+It is also possible to understand how the evidence discourages overcomplex models and
+therefore embodies Occam’s Razor by using the following interpretation.  The evidence is
+the probability that if you
+randomly selected
+parameter values from your model class, you
+would generate data set
+Y
+
 
 
 ### Question 23
