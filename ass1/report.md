@@ -352,29 +352,62 @@ We can conlude that $\mathcal{L}(\mathbf{W}_{opt})=\mathcal{L}(\mathbf{\mathbf{W
 
 ### Question 17
 
-This is the simples model because it is uninformative, each data set is equally likely. This means that
+This model is the simples because it does not have any parameter and so its probability density function is fixed. In particular this model spreads all its probability equaly over all dataset which means that the model does not have a more common dataset, one that it can "explain" the most.
+The lack of parameter means that we cannot also tune the model, we cannot make it learn or adapt to our data. 
 
 ### Question 18
 
+Each of the next model resembles the logistic regression model, in fact we have in all setting a logistic sigmoid of a linear function in $X$ and $y$.
+
+$$\frac{1}{1 + \exp \left(- y_i \cdot (\mathbf{w}^T \cdot\mathbf{x}) \right )}$$
+
+So each model gives more probability mass to the dataset for which the quantity $y_i \cdot (\mathbf{w}^T \cdot\mathbf{x})$ is positive and (possibly) large. This quantity has a geometric meaning: the quantity is the distance between the line given by  $\mathbf{w}^T \cdot\mathbf{x} = 0$ and the point $\mathbf{x}$, having the sign of $y_i$ if $\mathbf{x}$ lies on the side of the line "pointed" by $\mathbf{w}$, the opposide otherwise.
+
+#### Model $M1$ 
+
+Here we only focus the value of $x_1$ and we don't consider $x_2$, the line iduced by $w$ is orthogonal to the $x_1$ axis.
+
+#### Model $M2$
+
+Here we also care about the value of $x_2$, and the resulting line can have any orientation, but it still pass throught the origin.
+
+#### Model $M3$
+
+Here we also have a bias term $w_3$, and the resulting line can have any orientation and itercept. This is the most general linear model, we cannot have more degrees of freedom.
+
+![Summary of models](images/models.pdf)
 
 ### Question 19
 
 
 ### Question 20
 
+Marginalization is the process through which we can obtain the probability distribution of a random variable, from a joint probability distribution contaning it.
+This process effectively "removes" the other variables, the marginalzied ones, by a process that looks like a weighted average, in fact the formula:
+
+$$\int_{\theta} p(D|M_i, \theta) p(\theta) d\theta$$
+
+Expresses an average of models $p(D|M_i, \theta)$, by the probability of the model parameters $p(\theta)$. So we are averaging models taking into account the probability density function of $\theta$.
+
 
 ### Question 21
+
+Again, by choosing a normal distribution for th weights we make the following assumption:
+
+ - The mode is in the mean $\mu$, and all weights distribute around that one
+ - The way the weights distribute around the mean depends on the covariance matrix $\Sigma$
+
+ In particular, for the choice made:
+
+  - We favor weights close to zero, because $\mu=0$
+  - All weights are independent and have the same varianve $\sigma^2$. This means that they distribute spherically around the mean.
 
 
 ### Question 22
 
 It is also possible to understand how the evidence discourages overcomplex models and
 therefore embodies Occam’s Razor by using the following interpretation.  The evidence is
-the probability that if you
-randomly selected
-parameter values from your model class, you
-would generate data set
-Y
+the probability that if you randomly selected parameter values from your model class, you would generate data set D.
 
 
 
