@@ -288,8 +288,66 @@ Type-II Maximum-Likelihood is a sensible way of learning the parameters because 
 
 ### Question 15
 
+$$ \mathcal{L}(\mathbf{W}) = - log \left (\prod_{i=0}^N { \frac{1}{(2\pi^D \cdot \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}))^{1/2}} e^{-\frac{1}{2} \mathbf{y_i}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{y_i}} }\right )=$$
+
+$$ = \sum_{i=0}^N { \frac{1}{2} log \left( 2\pi^D \cdot \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )} + \sum_{i=0}^N \frac{1}{2} \mathbf{y_i}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{y_i} = $$
+
+$$=\frac{ND}{2} log \left( 2\pi^D\right) + \frac{N}{2}log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +\frac{1}{2}  \sum_{i=0}^N \mathbf{y_i}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{y_i} = $$
+
+$$=\frac{ND}{2} log \left( 2\pi^D\right) + \frac{N}{2}log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +\frac{1}{2} Tr\left(  \mathbf{Y}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}\right ) $$
+
+We can remove the constant terms, and remove $1/2$ by multiplying by 2.
+
+$$ \mathcal{L}(\mathbf{W}) = N log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +Tr\left(  \mathbf{Y}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}\right ) $$
+
+ Moving on to the derivative:
+
+$$\frac{\partial\mathcal{L}(\mathbf{W})}{\partial W_{ij}} = N \frac{\partial log \left( \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )}{\partial W_{ij}} + \frac{\partial Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y}\right ) }{\partial W_{ij}} =$$
+
+Let's expand one term at a time:
+$$\frac{\partial log \left( \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )}{\partial W_{ij}} = Tr\left(  \left(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}\right )^{-1} \cdot \frac{\partial\left(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}\right )}{\partial W_{ij}}  \right ) = $$
+$$\frac{\partial log \left( \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )}{\partial W_{ij}} = Tr\left(  \left(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}\right )^{-1} \cdot \frac{\partial\left(\mathbf{W}\mathbf{W}^T\right )}{\partial W_{ij}}  \right )$$
+
+$$\frac{\partial\left(\mathbf{W}\mathbf{W}^T\right )}{\partial W_{ij}} = \frac{\partial\left(\mathbf{W}\right )}{\partial W_{ij}}\cdot \mathbf{W}^T +\mathbf{W} \cdot \frac{\partial\left(\mathbf{W}^T\right )}{\partial W_{ij}}$$
+
+Where the derivation $\frac{\partial\left(\mathbf{W}\right )}{\partial W_{ij}}$ give rise to the single-entry element $J_{ij}$[^1].
+
+[^1]: This notation is taken from the [wikipedia page](https://en.wikipedia.org/wiki/Single-entry_matrix).
+
+$$\frac{\partial\left(\mathbf{W}\mathbf{W}^T\right )}{\partial W_{ij}} = \mathbf{J_{ij}}\cdot \mathbf{W}^T +\mathbf{W} \cdot \mathbf{J_{ij}}^T = \mathbf{J_{ij}}\cdot \mathbf{W}^T + (\mathbf{J_{ij}}\cdot \mathbf{W}^T)^T$$
+
+The next term to derive is:
+
+$$\frac{\partial Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y}\right ) }{\partial W_{ij}} = Tr\left(\frac{\partial (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y} }{\partial W_{ij}}\right )$$
+
+Using the identity:
+
+$$\partial \mathbf{X}^{-1} =\mathbf{X}^{-1} \cdot\partial \mathbf{X} \cdot \mathbf{X}^{-1}$$
+
+##### Mi sono dimneticato un meno
+We get to:
+
+$$Tr\left(\frac{\partial \left[ (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y} \right ]}{\partial W_{ij}}\right )= Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \frac{\partial (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})}{\partial W_{ij}}\cdot (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \mathbf{Y}^T\mathbf{Y} \right )=$$
+
+$$Tr\left(\frac{\partial \left[ (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y} \right ]}{\partial W_{ij}}\right ) = Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \left[ \mathbf{J_{ij}}\cdot \mathbf{W}^T +\mathbf{W} \cdot \mathbf{J_{ij}}^T \right ]\cdot (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \mathbf{Y}^T\mathbf{Y} \right )=$$
 
 ### Question 16
+
+Here is the representation I have learned, and beside the true data.
+
+![Representation learned](images/representation_learning.pdf)
+
+There is an invariance in the parameter matrx $\mathbf{W}$ with respect to the dot procut of any Orthogonal matrx, that is all possible rotation. We can see matematically, if
+
+$$\mathbf{W_{opt}'} =\mathbf{W_{opt}}\mathbf{R}$$
+
+In the likelihood formula the parameter $\mathbf{W}$ is present only in the form $\mathbf{W} \cdot \mathbf{W}^T$. So substituting both $\mathbf{W_{opt}}$ and $\mathbf{W_{opt}'}$:
+
+$$\mathbf{W}_{opt}' \cdot (\mathbf{W}_{opt}')^T = \mathbf{W} \mathbf{R} \cdot \mathbf{R}^T \mathbf{W}^T=\mathbf{W} \cdot \mathbf{W}^T$$
+
+We can conlude that $\mathcal{L}(\mathbf{W}_{opt})=\mathcal{L}(\mathbf{\mathbf{W}_{opt}'})$, and so both are valid optimal solutions.
+
+
 
 
 ### Question 17
