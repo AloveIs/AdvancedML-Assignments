@@ -11,9 +11,9 @@ class BayesLinearRegression:
 		self.precision = precision
 
 	def sample_posterior():
-		pass
+		 return []
 
-	def put_data(x,y):
+	def put_data(self,x,y):
 		self.posterior_cov = np.linalg.inv(np.linalg.inv(self.prior_cov) + self.precision* np.outer(x,x))
 		self.posterior_mean = np.dot(self.posterior_cov, ( np.dot(np.linalg.inv(self.prior_cov),self.prior_mean)) + (self.precision*x*y) )
 		
