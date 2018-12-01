@@ -23,7 +23,7 @@ class Evidence(Thread):
             if d % 10 == 0 :
                 print("\t" + str(self.model_n) + ":" + str(d))
 
-            self.result[d, self.model_n] = self.integral(self.x,self.y[d,:],1000000)
+            self.result[d, self.model_n] = self.integral(self.x,self.y[d,:],100000000)
             d = d + 1
         print("finished" + str(self.model_n))
 
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     #print(montecarlo_integral_M1(X,y[57,:],iteration=1e7))
 
     evidence = compute_evidence_multithread(X,y)
-    np.save("evidence", evidence)
+    np.save("evidenceE8", evidence)
     print("finised all")
     #print(likelyhood_M3(x, y[57,:], np.array([1,2,3])))
     #print(vect_likelyhood_M3(X, y[57,:], np.array([1,2,3])))
