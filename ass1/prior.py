@@ -36,17 +36,17 @@ def create_dataset():
     return (x,d)
 
 def view_dataset(x,y):
-    fig = plt.figure()
+    fig = plt.gca()
 
     marker_mapping = {-1 : 's',1: '^'}
     color_mapping = {-1 : 'b', 1: 'r'}
 
     for i in range(9):
 
-        plt.scatter(x[i,0],x[i,1], marker=marker_mapping[y[0,i]], color=color_mapping[y[0,i]], s=60**2)
+        fig.scatter(x[i,0],x[i,1], marker=marker_mapping[y[0,i]], color=color_mapping[y[0,i]], s=60**2)
 
 
-    plt.show()
+    #plt.show()
 
 
 def likelyhood_M0(x,y,w):
