@@ -4,27 +4,52 @@ author : Pietro Alovisi
 date : 11-17-2018
 header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left\lVert#1\right\rVert}
 ---
+<!--
 ### Todo
+ - Q1 ✔
+ - Q2 ✔
+ - Q3 ✔
+ - Q4
+ - Q5 finish calculations
+ - Q6
+ - Q7 ✔
+ - Q8
+ - Q9
+ - Q10
+ - Q11
 
- - finire risposta 4
- - check e finire risposta 5
- - question 6 mettere una immagine della marginale
- - domanda 9, che varianza scegliere nel prior?
- - domanda 9 rifare i calcoli per fgare unn sample delle rette
- 
+ - Q12 ✔
+ - Q13 ✔
+ - Q14 still to review
+ - Q15 ✔
+ - Q16 ✔
+
+ - Q17 ✔ why this is a good model?
+ - Q18 ✔ put image
+ - Q19 to finish
+ - Q20 ✔
+ - Q21 ✔
+ - Q22
+ - Q23
+ - Q24 da finire con programmazione
+-->
+
+## Part I : The Prior
 
 ### Question 1
 
 Choosing the gaussian distribution means that the vaules $t_i$ is distributed simmetrically around the true determinsitic function. because the gaussian distribution is a unimodal distribution, which means that has only one mode and for this particular distribution it coincides with the mean.
-This can be rephrased as assuming a determinsitic model $f(\mathbf{x})$ that generates realizations with a random error $\varepsilon$ that distributes as $\varepsilon \sim \mathcal{N}(0,\sigma^{2} \mathbf{I})$. This can be written as:
+This can be rephrased as assuming a determinsitic model $f(\mathbf{x})$ that generates realizations with a white noise $\varepsilon$ that distributes as $\varepsilon \sim \mathcal{N}(0,\sigma^{2} \mathbf{I})$, which is a sensible assumption when using real data. This can be written as:
 
-$$ \mathbf{t} = f(\mathbf{x}) + \varepsilon  \,\,\,\,\,\,\,\,\varepsilon \sim \mathcal{N}(0,\sigma^{2} \mathbf{I})$$
+$$ \mathbf{t_i} = f(\mathbf{x_i}) + \varepsilon  \,\,\,\,\,\,\,\,\varepsilon \sim \mathcal{N}(0,\sigma^{2} \mathbf{I})$$
 
 A prior oservation about the covariance matrix is that it is constant, it does not dependent on the input vector $\mathbf{x}$. Then the spherical covariance matrix implies two facts:
 
- - All the scalar random variables $t_ij$ of the vector $\mathbf{t_i}$ have the same variance $\sigma^2$ (called homoscedasticity).
+ - All the scalar random variables $t_{ij}$ of the vector $\mathbf{t_i}$ have the same variance $\sigma^2$ (called homoscedasticity).
 
- - The fact that the covariance matrix is diagonal means that all the output scalar component $t_ij$ of the vector $\mathbf{t_i}$ are independent one another.
+ - The fact that the covariance matrix is diagonal means that all the output scalar component $t_{ij}$ of the vector $\mathbf{t_i}$ are independent one another.
+
+Moreover the normal distribution has a lot of properties that makes it easy to work with, and also is ubiquitous in practice as an approximation because of the central limit theorem. 
 
 ### Question 2
 
@@ -43,7 +68,23 @@ $$p(\mathbf{t_i}) \sim \mathcal{N}(\mathbf{W}\,\mathbf{x_i},\sigma^{2} \mathbf{I
 Still assuming conditionally independent samples, from Eq. 3 the likelihood is just:
 
 $$p(\mathbf{T}|\mathbf{X}, \mathbf{W}) = \prod_{i = 1}^{N}{\mathcal{N}(\mathbf{t_i}|\mathbf{W}\, \mathbf{x_i},\sigma^{2} \mathbf{I})}$$ 
- 
+
+Having defined the two matrix $\mathbf{T}$ and $\mathbf{X}$ as:
+
+$$ \mathbf{T} = \begin{bmatrix}
+\mathbf{t_1}^T\\ 
+\mathbf{t_2}^T\\ 
+\dots\\ 
+\mathbf{t_N}^T\\ 
+\end{bmatrix}
+\,\,\,\,\,\,\,\,\, \mathbf{X} = 
+\begin{bmatrix}
+\mathbf{x_1}^T\\ 
+\mathbf{x_2}^T\\ 
+\dots\\ 
+\mathbf{x_N}^T\\ 
+\end{bmatrix}$$
+
 Which we can also write by expanding the whole product, by noting that since all the $\mathbf{t_i}$ have the same variance, the exponents in the probability density function sum up.
 
 $$p(\mathbf{T}|\mathbf{X}, \mathbf{W}) = \prod_{i = 1}^{N}{\frac{1}{\sigma^D (2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{1}{2\sigma^2}(\mathbf{t_i-Wx_i})^T(\mathbf{t_i-Wx_i})}} =$$
@@ -81,11 +122,11 @@ $$\frac{1}{2\tau^2}\sum_i^N{|w_i|} = \frac{1}{2\tau^2}\sum_i^N{\norm{w_i}_{L_1}}
 
 
 Using $L_1$ norm will perform some kind of dimensionality reduction by setting some variables to 0, while the quadratic term will try to balanced the parameter.
-We can see this effect by inspecting the derivative of the penalizing term: for the $L1$ norm it is always constant, while for the $L2$ it decreases as we get closer to zero, this means that in $L2$ optimizing values that are close to the origin does not get me any decrease in the penalazing term, while if I take a value far away from the origin then this will decrease a lot my penalizing term. 
+We can see this effect by inspecting the derivative of the penalizing term: for the $L_1$ norm it is always constant, while for the $L_2$ it decreases as we get closer to zero, this means that in $L_2$ optimizing values that are close to the origin does not get me any decrease in the penalazing term, while if I take a value far away from the origin then this will decrease a lot my penalizing term. 
 
-We can also see visually by looking at the iso-contours of these functions in figure \ref{I_question4}.
+We can also see visually by looking at the iso-contours of these functions in figure \ref{img_question4}.
 
-![Showing L1 and L2 differences.\label{I_question4}](images/question4.pdf)
+![Showing iso-contours of value 1 for the $L_1$ norm (green), and for $L_2$ (blue).\label{img_question4}](images/question4.pdf){width=70%}
 
 We can see that the corners of the square lie on the axis, so where one of the two variables is zero.
 
@@ -170,7 +211,7 @@ While we can get some insights in the term $p(\mathbf{T}| \mathbf{f},\mathbf{X},
 $$ p(\mathbf{t_i} = t^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta}) = p(f^* + \varepsilon = t^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta}) = p(\varepsilon = t^* - f^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta})$$
 So this term is also gaussian.
 
-![Graphical model of the assumption I made about the variables](images/variable_gm.pdf){ width=40% }
+![Graphical model of the joint likelihood in Question 7.](images/variable_gm.pdf){ width=40% }
 
 ### Question 8
 
@@ -182,10 +223,14 @@ We still condition in $\theta$ because we assumed it as a constant, it could be 
 
 ### Question 9
 
-![Prior over the parameters](images/prior.pdf)
+![Prior over the parameters, it is a $\mathcal{N}(\mathbf{0},\mathbf{I})$.\label{img_prior}](images/prior.pdf)
 
 
 ![Posterior over the parameters after observing one point with $\sigma = 0.1$](images/posterior_2_v01.pdf)
+
+The prior is shown in figure \ref{img_prior}. Then the evolution of the prior is shown in figure \ref{img_posterior}, where le left column is the posterior contour plot, and on the right are the samples taken from it.
+
+![In the left column the posterior over the parameters, the true value of the parameters is marked by a white dot. The left column represent samples from the posterior, and the gray line represents the line with the true parameters.This is the case having the error with $\sigma = 0.3$\label{img_posterior}](images/posterior_samples.pdf)
 
 There are 2 main effects in adding data to my model :
 
@@ -205,38 +250,41 @@ The lenghtscale defines a "unit of measure" between the two points. Since it div
 ### Question 11
 
 
+
+\pagebreak
+
+## Part II : The Posterior
+
 ### Question 12
 
-The preference is that our variable $X$ is a normal distribution whose elemetns are independent, and distribute around zero.
+The preference is that our latent variable $X$ is a normal distribution whose elements are independent because of the diagonal covariance matrix. Moreover the values of the latent variable distribute around zero.
 
 ### Question 13
 
-Since the model is:
+Since the marginalization of a gaussian by a gaussian prior is still a gaussan(by the *Gaussian Algebra*), we only need to compute its mean and covariance to describe fully the marginalized distribution. Given the independence of each row of the matrix $\mathbf{Y}$, we can write the following relationship:
 
-$$\mathbf{y_i} = \mathbf{W x_i} + \varepsilon$$
+$$\mathbf{y_i} = \mathbf{W x_i} + \varepsilon \,\,\,\,\,\,\, \varepsilon \sim \mathcal{N}(\mathbf{0},\sigma^2 \mathbf{I})$$
 
-The mean of each $\mathbf{y_i}$ is :
+We can then compute the first and second order statistic, the expected value and the variance, of each $\mathbf{y_i}$ in the random variable $\mathbf{x_i}$. We start from the expected value:
 
-$$\EX(\mathbf{y_i}) = \EX(\mathbf{W x_i} + \varepsilon)$$
-$$\EX_X(\mathbf{y_i}) = \mathbf{W}\EX_X(\mathbf{x_i}) + \EX_X(\varepsilon)$$
-$$\EX_X(\mathbf{y_i}) = 0 + 0$$
+$$\EX_X(\mathbf{y_i}) = \EX_X(\mathbf{W x_i} + \varepsilon)$$
+$$\EX(\mathbf{y_i}) = \mathbf{W}\EX(\mathbf{x_i}) + \EX(\varepsilon)$$
+$$\EX(\mathbf{y_i}) = 0 + 0$$
 
-We can describe the probability by only the first 2 moments of the random variable:
+Here I have dropped the subscript $_X$ for convenience. I have also used the linearity of the expectation operator. Now let's move on to the variance:
 
 $$\mathrm{Var}(\mathbf{y_i}) = \mathrm{Var}(\mathbf{W x_i} + \varepsilon)$$
 
-
-Since they are uncorrelated, we can write:
-
+Since the white noise $\varepsilon$ is uncorrelated to the variable $\mathbf{W x_i}$ , we can split the variance in two and get the following expression:
 
 $$\mathrm{Var}(\mathbf{y_i}) = \mathrm{Var}(\mathbf{W x_i}) + \mathrm{Var}(\varepsilon)$$
 $$\mathrm{Var}(\mathbf{y_i}) = \mathbf{W} \mathrm{Var}(\mathbf{x_i}) \mathbf{W}^T + \sigma^2 \mathbf{I} = \mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}$$
 
-Since each $y_i$ is independent with each other, we can combine the results we got into the distribution:
+Where I have used the properties of the variance to move $W$ outside the argument of the variance, since it as a constant. Each $y_i$ is independent with each other thus we can combine the results we got into the distribution:
 
 $$p(\mathbf{Y}| \mathbf{W}) = \prod_i^N{ \mathcal{N}(\mathbf{y_i}|\mathbf{0},\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})}$$
 
-$$p(\mathbf{Y}| \mathbf{W}) \sim \mathcal{N}(\mathbf{0},\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}, \mathbf{I})$$
+$$p(\mathbf{Y}| \mathbf{W}) \sim \mathcal{N}(\mathbf{Y}|\mathbf{0},\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}, \mathbf{I})$$
 
 
 ### Question 14
@@ -288,122 +336,160 @@ Type-II Maximum-Likelihood is a sensible way of learning the parameters because 
 
 ### Question 15
 
-$$ \mathcal{L}(\mathbf{W}) = - log \left (\prod_{i=0}^N { \frac{1}{(2\pi^D \cdot \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}))^{1/2}} e^{-\frac{1}{2} \mathbf{y_i}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{y_i}} }\right )=$$
+$$ \mathcal{L}(\mathbf{W}) = - log \left (\prod_{i=0}^N { \mathcal{N}(\mathbf{y_i}|\mathbf{0},\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}=) }\right )=$$
+
+$$ = - log \left (\prod_{i=0}^N { \frac{1}{(2\pi^D \cdot \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}))^{1/2}} e^{-\frac{1}{2} \mathbf{y_i}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{y_i}} }\right )=$$
+
+Then by using the properties of the logarithm we can obtain:
 
 $$ = \sum_{i=0}^N { \frac{1}{2} log \left( 2\pi^D \cdot \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )} + \sum_{i=0}^N \frac{1}{2} \mathbf{y_i}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{y_i} = $$
 
-$$=\frac{ND}{2} log \left( 2\pi^D\right) + \frac{N}{2}log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +\frac{1}{2}  \sum_{i=0}^N \mathbf{y_i}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{y_i} = $$
+$$=\frac{ND}{2} log \left( 2\pi\right) + \frac{N}{2}log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +\frac{1}{2}  \sum_{i=0}^N \mathbf{y_i}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{y_i} = $$
 
-$$=\frac{ND}{2} log \left( 2\pi^D\right) + \frac{N}{2}log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +\frac{1}{2} Tr\left(  \mathbf{Y}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}\right ) $$
+$$=\frac{ND}{2} log \left( 2\pi\right) + \frac{N}{2}log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +\frac{1}{2} Tr\left(  \mathbf{Y}(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\right ) $$
 
-We can remove the constant terms, and remove $1/2$ by multiplying by 2.
+We can remove the first constant term, and remove $1/2$ by multiplying by 2 which only scales the function. Removing these parameter will not change the maxima and minima of the log likelyhood. The final expression is:
 
-$$ \mathcal{L}(\mathbf{W}) = N log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +Tr\left(  \mathbf{Y}^T(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}\right ) $$
+$$ \mathcal{L}(\mathbf{W}) = N log \left(\det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right ) +Tr\left(  \mathbf{Y}(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\right ) $$
 
- Moving on to the derivative:
+ Moving on to the derivative, since we are deriving a scalar by a matrix it's convinient to derive by an element of the matrix $W_{ij}$:
 
-$$\frac{\partial\mathcal{L}(\mathbf{W})}{\partial W_{ij}} = N \frac{\partial log \left( \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )}{\partial W_{ij}} + \frac{\partial Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y}\right ) }{\partial W_{ij}} =$$
+$$\frac{\partial\mathcal{L}(\mathbf{W})}{\partial W_{ij}} = N \frac{\partial log \left( \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )}{\partial W_{ij}} + \frac{\partial Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y}\right ) }{\partial W_{ij}}$$
 
-Let's expand one term at a time:
+Here we have two terms to derive. Let's start from the first one:
+
 $$\frac{\partial log \left( \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )}{\partial W_{ij}} = Tr\left(  \left(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}\right )^{-1} \cdot \frac{\partial\left(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}\right )}{\partial W_{ij}}  \right ) = $$
+
+By using the property[^2] $\partial\left( log\left( det \left( \mathbf{X}\right)\right) \right) = Tr\left( \mathbf{X}^{-1} \partial\mathbf{X} \right)$ we get:
+
 $$\frac{\partial log \left( \det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})\right )}{\partial W_{ij}} = Tr\left(  \left(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}\right )^{-1} \cdot \frac{\partial\left(\mathbf{W}\mathbf{W}^T\right )}{\partial W_{ij}}  \right )$$
+
+We only need to develop the right factor of the multiplication, and by applying the simple product rule for matrix derivation we obtain:
 
 $$\frac{\partial\left(\mathbf{W}\mathbf{W}^T\right )}{\partial W_{ij}} = \frac{\partial\left(\mathbf{W}\right )}{\partial W_{ij}}\cdot \mathbf{W}^T +\mathbf{W} \cdot \frac{\partial\left(\mathbf{W}^T\right )}{\partial W_{ij}}$$
 
 Where the derivation $\frac{\partial\left(\mathbf{W}\right )}{\partial W_{ij}}$ give rise to the single-entry element $J_{ij}$[^1].
 
 [^1]: This notation is taken from the [wikipedia page](https://en.wikipedia.org/wiki/Single-entry_matrix).
+[^2]: Taken from *The Matrix Cookbook* available [here](https://www.ics.uci.edu/~welling/teaching/KernelsICS273B/MatrixCookBook.pdf).
 
 $$\frac{\partial\left(\mathbf{W}\mathbf{W}^T\right )}{\partial W_{ij}} = \mathbf{J_{ij}}\cdot \mathbf{W}^T +\mathbf{W} \cdot \mathbf{J_{ij}}^T = \mathbf{J_{ij}}\cdot \mathbf{W}^T + (\mathbf{J_{ij}}\cdot \mathbf{W}^T)^T$$
 
-The next term to derive is:
+Before putting everythin together let's derive the next term:
 
-$$\frac{\partial Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y}\right ) }{\partial W_{ij}} = Tr\left(\frac{\partial (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y} }{\partial W_{ij}}\right )$$
+$$\frac{\partial Tr\left(\mathbf{Y}(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\right ) }{\partial W_{ij}} = Tr\left(\frac{\partial \mathbf{Y}(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T}{\partial W_{ij}}\right )$$
 
-Using the identity:
+Where I have used the linearity of the the derivation of the trace (afterall the trace is just a sum). Using the identity $\partial \mathbf{X}^{-1} =-\mathbf{X}^{-1} \cdot\partial \mathbf{X} \cdot \mathbf{X}^{-1}$ we obtain:
 
-$$\partial \mathbf{X}^{-1} =\mathbf{X}^{-1} \cdot\partial \mathbf{X} \cdot \mathbf{X}^{-1}$$
+$$Tr\left(\frac{\partial \left[\mathbf{Y} (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T \right ]}{\partial W_{ij}}\right )=$$
 
-##### Mi sono dimneticato un meno
-We get to:
+$$= Tr\left(-\mathbf{Y}(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \frac{\partial (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})}{\partial W_{ij}}\cdot (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \mathbf{Y}^T \right )=$$
 
-$$Tr\left(\frac{\partial \left[ (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y} \right ]}{\partial W_{ij}}\right )= Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \frac{\partial (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})}{\partial W_{ij}}\cdot (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \mathbf{Y}^T\mathbf{Y} \right )=$$
+$$Tr\left(-\mathbf{Y} \frac{\partial \left[\mathbf{Y} (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T \right ]}{\partial W_{ij}}\right ) =$$
 
-$$Tr\left(\frac{\partial \left[ (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1}\mathbf{Y}^T\mathbf{Y} \right ]}{\partial W_{ij}}\right ) = Tr\left((\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \left[ \mathbf{J_{ij}}\cdot \mathbf{W}^T +\mathbf{W} \cdot \mathbf{J_{ij}}^T \right ]\cdot (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \mathbf{Y}^T\mathbf{Y} \right )=$$
+$$ = Tr\left(-\mathbf{Y}(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \left[ \mathbf{J_{ij}}\cdot \mathbf{W}^T +\mathbf{W} \cdot \mathbf{J_{ij}}^T \right ]\cdot (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \cdot \mathbf{Y}^T\right )$$
+
+Now we will put everything together.If we make the following substitution for a cleaner formula:
+
+$$\mathbf{\Sigma}= \mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}$$ 
+
+$$\mathbf{H_{ij}}=\frac{\partial\left(\mathbf{W}\mathbf{W}^T\right )}{\partial W_{ij}} = \mathbf{J_{ij}}\cdot \mathbf{W}^T +\mathbf{W} \cdot \mathbf{J_{ij}}^T$$
+
+The final formula is then:
+
+$$\frac{\partial\mathcal{L}(\mathbf{W})}{\partial W_{ij}} = N Tr \left( \mathbf{\Sigma}^{-1} \cdot \mathbf{H_{ij}} \right) + Tr\left(-\mathbf{Y} \cdot \mathbf{\Sigma}^{-1} \cdot \mathbf{H_{ij}} \cdot \mathbf{\Sigma}^{-1} \cdot \mathbf{Y}^T \right )$$
+
 
 ### Question 16
 
-Here is the representation I have learned, and beside the true data.
 
-![Representation learned](images/representation_learning.pdf)
+![On the left the latent variable representation of the data, while on the right the true representation that generated the data.\label{img_rep_learning}](images/representation_learning.pdf)
 
-There is an invariance in the parameter matrx $\mathbf{W}$ with respect to the dot procut of any Orthogonal matrx, that is all possible rotation. We can see matematically, if
+The result of the algorithm are presented in figure \ref{img_rep_learning}. There is shown the learned latent representation of the data and the starting representation that then we used to generate the data. As we can se the learned latent representation is a rotated version of the true representation. This is because there is an invariance in the parameter matrx $\mathbf{W}$ with respect to the dot product (function composition) with any orthogonal matrx. Since any orthogonal matrix represent a rotation in its appropriate space, it means that the latent representation is invariant to rotation. We can see it matematically, if we assume that there is a matrix $W_{opt}$ which is a minimum of $\partial\mathcal{L}$ and we create a new matrix:
 
 $$\mathbf{W_{opt}'} =\mathbf{W_{opt}}\mathbf{R}$$
 
-In the likelihood formula the parameter $\mathbf{W}$ is present only in the form $\mathbf{W} \cdot \mathbf{W}^T$. So substituting both $\mathbf{W_{opt}}$ and $\mathbf{W_{opt}'}$:
+For any $\mathbf{R}$ orthogonal. In the likelihood formula the parameter $\mathbf{W}$ is present only in the form $\mathbf{W} \cdot \mathbf{W}^T$. So substituting both $\mathbf{W_{opt}}$ and $\mathbf{W_{opt}'}$:
 
 $$\mathbf{W}_{opt}' \cdot (\mathbf{W}_{opt}')^T = \mathbf{W} \mathbf{R} \cdot \mathbf{R}^T \mathbf{W}^T=\mathbf{W} \cdot \mathbf{W}^T$$
 
-We can conlude that $\mathcal{L}(\mathbf{W}_{opt})=\mathcal{L}(\mathbf{\mathbf{W}_{opt}'})$, and so both are valid optimal solutions.
+Where we used the fact that $\mathbf{R} \cdot \mathbf{R}^T = \mathbf{I}$ for any orthogonal matrix. We can conlude that $\mathcal{L}(\mathbf{W}_{opt})=\mathcal{L}(\mathbf{\mathbf{W}_{opt}'})$, and so both are valid optimal solutions. If we plug $\mathbf{W}_{opt}'$ into the model formula:
 
+$$\mathbf{Y}= \mathbf{X} \cdot (\mathbf{W}_{opt}')^T = \mathbf{X} \cdot \mathbf{R}^T (\mathbf{W}_{opt})^T = \mathbf{X}' \cdot (\mathbf{W}_{opt})^T$$
 
+Where $\mathbf{X}'$ it's the other latent representation, and we can see that it only differs from the $\mathbf{X}$ by a rotation, therefore proving that we may learn any rotated version of the true representation.
 
+\pagebreak
+
+## Part III : The Evidence
 
 ### Question 17
 
-This model is the simples because it does not have any parameter and so its probability density function is fixed. In particular this model spreads all its probability equaly over all dataset which means that the model does not have a more common dataset, one that it can "explain" the most.
-The lack of parameter means that we cannot also tune the model, we cannot make it learn or adapt to our data. 
+This model is the simples because it does not have any parameter and so its probability density function is fixed. In particular this model spreads all its probability equaly over all dataset which means that the model does not have a more likely dataset, one that it can "explain" the most.
+Basically this is a model that "explains" all dataset, but badly.
+The lack of parameter means that we cannot also tune the model, we cannot make it learn or adapt to our data. The class of models $M_0$ is composed only by one model.
 
 ### Question 18
 
-Each of the next model resembles the logistic regression model, in fact we have in all setting a logistic sigmoid of a linear function in $X$ and $y$.
+Each of the next model resembles the logistic regression model, in fact we have in all setting a logistic sigmoid of a linear function in $x$ and $y$.
 
-$$\frac{1}{1 + \exp \left(- y_i \cdot (\mathbf{w}^T \cdot\mathbf{x}) \right )}$$
+$$\frac{1}{1 + \exp \left(- y_i \cdot (\mathbf{\theta}^T \cdot\mathbf{x} + \theta_0) \right )}$$
 
-So each model gives more probability mass to the dataset for which the quantity $y_i \cdot (\mathbf{w}^T \cdot\mathbf{x})$ is positive and (possibly) large. This quantity has a geometric meaning: the quantity is the distance between the line given by  $\mathbf{w}^T \cdot\mathbf{x} = 0$ and the point $\mathbf{x}$, having the sign of $y_i$ if $\mathbf{x}$ lies on the side of the line "pointed" by $\mathbf{w}$, the opposide otherwise.
+So each model gives more probability mass to the dataset for which the quantity $y_i \cdot (\mathbf{\theta}^T \cdot\mathbf{x}+ \theta_0)$ is positive and (possibly) large. This quantity has a geometric meaning: if the bias is 0 ($\theta_0= 0$) the quantity is the projection of $\mathbf{x}$ on $\mathbf{\theta}$, which is just perpendicular distance with sign between the line given by $\mathbf{\theta}^T \cdot\mathbf{x} = 0$ and the point $\mathbf{x}$ scaled by the norm of $\mathbf{\theta}$. Then by multipling by $y_i$  we might change the sign. if $\mathbf{x}$ lies on the side of the line "pointed" by $\mathbf{\theta}$ then the sign of $y_i$ is preserved.
+If we include the bias, we can think of it as a threshold on this "distance", that graphically changes the intercept of the boundary $\mathbf{\theta}^T \cdot\mathbf{x} + \theta_0 = 0$
+This boundary defines an are where $y_i = 1$ are more probable (the one pointed by $\theta$) and another one where $y_i = -1$ are. This difference is more enhanced if we have a high value of $\mathbf{\theta}$ that "sharpens" the boundary.
 
 #### Model $M1$ 
 
-Here we only focus the value of $x_1$ and we don't consider $x_2$, the line iduced by $w$ is orthogonal to the $x_1$ axis.
+Here we only focus the value of $x_1$ and we don't consider $x_2$, the boundary induced by $\mathbf{\theta}$ is orthogonal to the $x_1$ axis through the origin. Then $\mathbf{\theta}$, as we said, controls the "strictness" on which the model tollerate point on the wrong side. This puts it's probability mass over datasets that can be split by such vertical boundary.
 
 #### Model $M2$
 
-Here we also care about the value of $x_2$, and the resulting line can have any orientation, but it still pass throught the origin.
+Here we also care about the value of $x_2$, and the resulting line can have any orientation, but it still passes throught the origin. Same line of reasoning as before for the $\mathbf{\theta}$ parameter.Again this puts it's probability mass over datasets that can be split by such boundary.
 
 #### Model $M3$
 
-Here we also have a bias term $w_3$, and the resulting line can have any orientation and itercept. This is the most general linear model, we cannot have more degrees of freedom.
+Here we also have a bias term $\theta_3$, and the resulting line can have any orientation and itercept. This is the most general linear model, we cannot have more degrees of freedom. This model spread its probability mass over all linearly separable datasets.
+
+Each of these datasets cannot "explain" any non-linear dataset, while $M_0$ can. On the other hand these models are flexible because they have parameter that can be tuned to a particular subset of datasets.
 
 ##### Put image here
 
 ### Question 19
 
+$M_3$ is the most flexible one because it can move its decision boundary however it wants, it can express any linear  decision boundary. In particular it can explain all the datasets of $M_1$ and $M_2$ (because both linear) plus some more, which means that it must allocate less probability mass over those datasets spanned also by $M_1$ and $M_2$. So the model pays this flexibility in less probability per each single dataset it "explains".
+The same consideration works for $M_2$ which is has more flexibility than $M_1$.
+Then $M_0$ 
 
 ### Question 20
 
-Marginalization is the process through which we can obtain the probability distribution of a random variable, from a joint probability distribution contaning it.
-This process effectively "removes" the other variables, the marginalzied ones, by a process that looks like a weighted average, in fact the formula:
+Marginalization is the process through which we can obtain a probability distribution of a subset of random variable, from a joint probability distribution by marginalizing the other random variables away.
+This process effectively "removes" the dependency of the other variables, the marginalzied ones, by a process that looks like a weighted average. This integration conveys the effect of the dependencies of the marginalized variable into the output distribution. In our case this is done by:
 
-$$\int_{\theta} p(D|M_i, \theta) p(\theta) d\theta$$
+$$ \int_{\theta} p(D|M_i, \theta) p(\theta) d\theta$$
 
-Expresses an average of models $p(D|M_i, \theta)$, by the probability of the model parameters $p(\theta)$. So we are averaging models taking into account the probability density function of $\theta$.
+Which expresses an average of models $p(D|M_i, \theta)$, by the probability of the model parameters $p(\theta)$. So we are averaging models taking into account the probability density function of $\theta$. We are mixing the possible models, but giving more weight to the ones that are more probable, given the prior distribution.
 
 
 ### Question 21
 
-Again, by choosing that distribution for the prior we again assume that all the parameter are independent, because of the diagonala covariance matrix. And then we can relate the choosen parameters $\mu$ and $\sigma^2$ to the orientation of the lines defined by the expression $\mathbf{w}^T \cdot\mathbf{x}$ that we talked about in Question 18. The mean is zero, which means that the value of the parameters $\theta_i$ will distribute around zero, but their variance is very high, which means that is not unlikely the event of having a parameter far from zero. Since the parameter spread around zero, the average resulting line will be one
+By choosing that distribution for the prior we again assume that all the parameter are independent, because of the diagonal covariance matrix. And then we can relate the choosen parameters $\mu$ and $\sigma^2$ to decision boundary defined by the expression $\mathbf{\theta}^T \cdot\mathbf{x}$ that we talked about in Question 18. The mean is zero, which means that the value of the parameters $\theta_i$ will distribute around zero, but their variance is very high, which means that is not unlikely the event of having a parameter far from zero. This also relates to what we said about the value of the parameters, if they are high I get a more "strict" boundary.
+Since parameter are independent and with mean 0, we don't restrict the orientation of the lines in $M_2$ and $M_3$. If we had choosen a non diagonal covariance matrix we would have gotten a bias in the orientation of the lines, because the ratio of the parametrs of the line would be biased. In the extreme case where there is a relation between two parameters of $\theta$, the resulting boundaries form a pencil of lines (either parallel or incident). 
+For the models, the fact the the mean is 0 means that the normal vector $\theta$ is not biased. If the mean had not been non zero, that would have ment a biased in the direction of $\theta$. We can see this effect in $M_1$, where if the mean is positive, then the model assigns more porobability to the datasets having positive $y_i$ on the right than the other one, because the parameter theta is more likely positive.
+For $M_2$ the effect is that, if we sample a lot of paramerts, we have an average decision boundary with parameters given by the mean.
 
 
 ### Question 22
 
-![Shown here are the plots of the evidence of each dataset per each model. On the left using the order of the datasets as they were generated, on the right using the same ordering procedure proposed in the paper.\label{img_evidence}](images/evidence_both.pdf)
+![Shown here are the plots of the evidence of each dataset per each model. On the left using the order of the datasets as they were generated, on the right using the same ordering procedure proposed in the paper.\label{img_evidence}](images/evidences_M00.pdf)
 
 If we sum up the evidence over all dataset, for each model we get 1 (obviously in practice there is a small error, in my case on the order of $10^4$). That is beacause this is a probabilistic distribution, and so must sum up to 1. We can interpret this distribution from a generative prospective: if we would sample the model parameters at random, the probability of generating dataset $D_i$ is $p(D_i|M_i)$.
 
 There there are few comment about figure \ref{img_evidence}, where we can see that the left plot is symmetric, and given how the datasets are indexed in that figure, that means that the probability of a dataset doesn't change if we filp the sign to all the $y_i$ in a dataset. This of course makes sense because the only thing that changes is the separating line sign, and since the distribution of the parameter is symmetric the probability of obtainig $\theta_i$ or $-\theta_i$ is the same.
 
-Another comment is the shape of the plot on the right size. We see that $M_3$ has a higher peak in some datasets, while $M_2$ has its maximum value lower than the one of $M_3$, but on a wider range in the dataset axis. The same consideration for $M_1$ with respect to $M_2$, while $M_0$ is completely flat at a constant value of $1/512$. We also see that $M_3$ assigns some probability distribution to the datasets where most of the probability mass of $M_2$ and $M_1$ lies, but the probability of $M_3$ is lower than the one assigned by $M_2$ or $M_1$. Here lies the automatic Occam's razor, we choose the model that puts the most probability on the datasets that we are intrested in, which is usually the simplest.
+Another comment is the shape of the plot on the right size that I have also plotted in figure \ref{img_evidence_log} using a log scale to better highlight its feature. We see that $M_3$ has a higher peak in some datasets, while $M_2$ has its maximum value lower than the one of $M_3$, but on a wider range in the dataset axis. The same consideration for $M_1$ with respect to $M_2$, while $M_0$ is completely flat at a constant value of $1/512$. We also see that $M_3$ assigns some probability distribution to the datasets where most of the probability mass of $M_2$ and $M_1$ lies, but the probability of $M_3$ is lower than the one assigned by $M_2$ or $M_1$. Here lies the automatic Occam's razor, we choose the model that puts the most probability on the datasets that we are intrested in, which is usually the simplest.
+
+![Same as the right plot in figure \ref{img_evidence} but using log scale on the y axis.\label{img_evidence_log}](images/evidences_M00_log.pdf)
 
 [comment]: <> (It is also possible to understand how the evidence discourages overcomplex models and therefore embodies Occam’s Razor by using the following interpretation.  The 			evidence is the probability that if you randomly selected parameter values from your model class, you would generate data set D.)
 
@@ -412,8 +498,10 @@ Another comment is the shape of the plot on the right size. We see that $M_3$ ha
 ![Representation of the most and least likely datasets, as said before, because of simmetricity we don't care if triangles represent $+1$ or $-1$. in the first row are the most probable datasets, and in the second one the least.\label{img_most_probable_datasets}](images/max_min_dataset.pdf)
 
 We can comment the most likely and the least likely for each models, represented in figure \ref{img_most_probable_datasets}. Of course we do not have a maximum and minimum in the $M_0$ case, since all the models are equally probable, so they are not shown in the figure. 
-For $M_1$ the most likely is one that can be separated by a vertical line, that is the model that it encodes.For $M_2$ the most likely is one that can be separated by a line that passes through the origin, again because the model it represents divide the space with a line crossing the origin. For $M_3$ the most likely is the one with all $+1$ (or $-1$). This is because we have also the bias term, and having a big variance this can move the line very far away from the square $[-1,1]\times[-1,1]$ where the data lies. If the line don't cut in half the data it "classifies" all points as $-1$ or $+1$.
-While for the least probable dataset we see that it represent non-linerly separable configuration, which means that none of the model is likely to generate since they represent lines. 
+For $M_1$ the most likely is one that can be separated by a vertical line, that is the model that it encodes.
+For $M_2$ the most likely is one that can be separated by a line that passes through the origin, again because the model it represents divide the space with a line crossing the origin.
+For $M_3$ the most likely is the one with all $+1$ (or $-1$). This makes because we have also the bias term, and having a big variance this can move the line very far away from the square $[-1,1]\times[-1,1]$ where the data lies. If the boundary don't cut in half the data it "classifies" all points as $-1$ or $+1$.
+While for the least probable dataset we see that it represent non-linerly separable configuration, which makes sense, because none of the model is likely to generate it, since they represent linear boundaries. 
 
 ### Question 24
 
@@ -421,13 +509,17 @@ The prior encodes the preferences about the parameter of the linear boundaries t
 The result of changing the mean to $5$, are depicted in figure \ref{img_evidence_mean_5}. First of all we can see that we have lost the symmetricity in the left plot, because a having changed the mean, we encoded come preference in the direction of the normal of the decision boundary, so we will prefer datasets for which negative $y_i$ lies below the line.
 Moreover the right plot is a little bit squahsed toward the y_axis compared to the one of figure \label{img_evidence}, we can see a scaled version in figure \ref{img_evidence_mean_5_closer}.
 
+#### Changing covariance
+
+#### Changing mean
+
 ![\label{img_evidence_mean_5}](images/evidence_m55_both.pdf) 
 
 ![\label{img_evidence_mean_5_closer}](images/evidence_m55_closer.pdf) 
 
+---
 
 \pagebreak
-
 
 # Appenddix A
 
