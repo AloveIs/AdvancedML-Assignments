@@ -375,7 +375,7 @@ Here we also care about the value of $x_2$, and the resulting line can have any 
 
 Here we also have a bias term $w_3$, and the resulting line can have any orientation and itercept. This is the most general linear model, we cannot have more degrees of freedom.
 
-![Summary of models](images/models.pdf)
+##### Put image here
 
 ### Question 19
 
@@ -392,33 +392,46 @@ Expresses an average of models $p(D|M_i, \theta)$, by the probability of the mod
 
 ### Question 21
 
-Again, by choosing a normal distribution for th weights we make the following assumption:
-
- - The mode is in the mean $\mu$, and all weights distribute around that one
- - The way the weights distribute around the mean depends on the covariance matrix $\Sigma$
-
- In particular, for the choice made:
-
-  - We favor weights close to zero, because $\mu=0$
-  - All weights are independent and have the same varianve $\sigma^2$. This means that they distribute spherically around the mean.
+Again, by choosing that distribution for the prior we again assume that all the parameter are independent, because of the diagonala covariance matrix. And then we can relate the choosen parameters $\mu$ and $\sigma^2$ to the orientation of the lines defined by the expression $\mathbf{w}^T \cdot\mathbf{x}$ that we talked about in Question 18. The mean is zero, which means that the value of the parameters $\theta_i$ will distribute around zero, but their variance is very high, which means that is not unlikely the event of having a parameter far from zero. Since the parameter spread around zero, the average resulting line will be one
 
 
 ### Question 22
 
-It is also possible to understand how the evidence discourages overcomplex models and
-therefore embodies Occam’s Razor by using the following interpretation.  The evidence is
-the probability that if you randomly selected parameter values from your model class, you would generate data set D.
+![Shown here are the plots of the evidence of each dataset per each model. On the left using the order of the datasets as they were generated, on the right using the same ordering procedure proposed in the paper.\label{img_evidence}](images/evidence_both.pdf)
 
+If we sum up the evidence over all dataset, for each model we get 1 (obviously in practice there is a small error, in my case on the order of $10^4$). That is beacause this is a probabilistic distribution, and so must sum up to 1. We can interpret this distribution from a generative prospective: if we would sample the model parameters at random, the probability of generating dataset $D_i$ is $p(D_i|M_i)$.
 
+There there are few comment about figure \ref{img_evidence}, where we can see that the left plot is symmetric, and given how the datasets are indexed in that figure, that means that the probability of a dataset doesn't change if we filp the sign to all the $y_i$ in a dataset. This of course makes sense because the only thing that changes is the separating line sign, and since the distribution of the parameter is symmetric the probability of obtainig $\theta_i$ or $-\theta_i$ is the same.
+
+Another comment is the shape of the plot on the right size. We see that $M_3$ has a higher peak in some datasets, while $M_2$ has its maximum value lower than the one of $M_3$, but on a wider range in the dataset axis. The same consideration for $M_1$ with respect to $M_2$, while $M_0$ is completely flat at a constant value of $1/512$. We also see that $M_3$ assigns some probability distribution to the datasets where most of the probability mass of $M_2$ and $M_1$ lies, but the probability of $M_3$ is lower than the one assigned by $M_2$ or $M_1$. Here lies the automatic Occam's razor, we choose the model that puts the most probability on the datasets that we are intrested in, which is usually the simplest.
+
+[comment]: <> (It is also possible to understand how the evidence discourages overcomplex models and therefore embodies Occam’s Razor by using the following interpretation.  The 			evidence is the probability that if you randomly selected parameter values from your model class, you would generate data set D.)
 
 ### Question 23
 
+![Representation of the most and least likely datasets, as said before, because of simmetricity we don't care if triangles represent $+1$ or $-1$. in the first row are the most probable datasets, and in the second one the least.\label{img_most_probable_datasets}](images/max_min_dataset.pdf)
+
+We can comment the most likely and the least likely for each models, represented in figure \ref{img_most_probable_datasets}. Of course we do not have a maximum and minimum in the $M_0$ case, since all the models are equally probable, so they are not shown in the figure. 
+For $M_1$ the most likely is one that can be separated by a vertical line, that is the model that it encodes.For $M_2$ the most likely is one that can be separated by a line that passes through the origin, again because the model it represents divide the space with a line crossing the origin. For $M_3$ the most likely is the one with all $+1$ (or $-1$). This is because we have also the bias term, and having a big variance this can move the line very far away from the square $[-1,1]\times[-1,1]$ where the data lies. If the line don't cut in half the data it "classifies" all points as $-1$ or $+1$.
+While for the least probable dataset we see that it represent non-linerly separable configuration, which means that none of the model is likely to generate since they represent lines. 
 
 ### Question 24
 
+The prior encodes the preferences about the parameter of the linear boundaries that each model encodes. So changing the mean, will make the "average" boundary the one having as parameter, the one specified by the mean. If we change the covariance, we introduce some dependance in the parameters of the decision boundary, which can cause the line to have a "preferred" direction.
+The result of changing the mean to $5$, are depicted in figure \ref{img_evidence_mean_5}. First of all we can see that we have lost the symmetricity in the left plot, because a having changed the mean, we encoded come preference in the direction of the normal of the decision boundary, so we will prefer datasets for which negative $y_i$ lies below the line.
+Moreover the right plot is a little bit squahsed toward the y_axis compared to the one of figure \label{img_evidence}, we can see a scaled version in figure \ref{img_evidence_mean_5_closer}.
+
+![\label{img_evidence_mean_5}](images/evidence_m55_both.pdf) 
+
+![\label{img_evidence_mean_5_closer}](images/evidence_m55_closer.pdf) 
+
+
+\pagebreak
+
+
 # Appenddix A
 
-## Demonstration of $\sum_i{\mathbf{x_i} \mathbf{x_i}^T}=\mathbf{X}^T \mathbf{X}$
+## Proof of $\sum_i{\mathbf{x_i} \mathbf{x_i}^T}=\mathbf{X}^T \mathbf{X}$
 
 Suppose we have a matrix $X$:
 

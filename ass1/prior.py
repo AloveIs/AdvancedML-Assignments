@@ -6,6 +6,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from threading import Thread
 
+
+STD_DEV = 10**(1.5)
+MEAN = 5
+
 class Evidence(Thread):
     def __init__(self, integral,model_n,x,y, result):
         Thread.__init__(self)
@@ -23,7 +27,7 @@ class Evidence(Thread):
             if d % 10 == 0 :
                 print("\t" + str(self.model_n) + ":" + str(d))
 
-            self.result[d, self.model_n] = self.integral(self.x,self.y[d,:],100000000)
+            self.result[d, self.model_n] = self.integral(self.x,self.y[d,:],1000000)
             d = d + 1
         print("finished" + str(self.model_n))
 
@@ -100,7 +104,7 @@ def montecarlo_integral_M3(x,y,iteration=10**8):
     y = np.squeeze(np.asarray(y))
     result = 0
     iteration = int(iteration)
-    W = np.random.normal(0,10,iteration*3)
+    W = np.random.normal(MEAN,STD_DEV,iteration*3)
     W.shape = (3,iteration)
     XW = x.dot(W)
     
@@ -122,7 +126,7 @@ def montecarlo_integral_M2(x,y,iteration=10**8):
     result = 0
     iteration = int(iteration)
 
-    W = np.random.normal(0,10,iteration*2)
+    W = np.random.normal(MEAN,STD_DEV,iteration*2)
 
     W.shape = (2,iteration)
     XW = np.dot(x[:,0:2],W)
@@ -147,7 +151,7 @@ def montecarlo_integral_M1(x,y,iteration=10**8):
     result = 0
     iteration = int(iteration)
 
-    W = np.random.normal(0,10,iteration)
+    W = np.random.normal(MEAN,STD_DEV,iteration)
 
     W.shape = (1,iteration)
     XW = np.dot(x[:,0:1],W)
@@ -221,7 +225,7 @@ if __name__ == '__main__':
     #print(montecarlo_integral_M1(X,y[57,:],iteration=1e7))
 
     evidence = compute_evidence_multithread(X,y)
-    np.save("evidenceE8", evidence)
+    np.save("evidenceE6M55", evidence)
     print("finised all")
     #print(likelyhood_M3(x, y[57,:], np.array([1,2,3])))
     #print(vect_likelyhood_M3(X, y[57,:], np.array([1,2,3])))
