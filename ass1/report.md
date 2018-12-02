@@ -9,8 +9,8 @@ header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left
  - Q1 ✔
  - Q2 ✔
  - Q3 ✔
- - Q4
- - Q5 finish calculations
+ - Q4 ✔ finsih with last consideration about corners
+ - Q5 ✔
  - Q6
  - Q7 ✔
  - Q8
@@ -99,58 +99,62 @@ Where we substituted the expression at the exponent $\sum_i^N{(\mathbf{Wx_i-t_i}
 
 ### Question 4
 
-The two penalization terms can be obtained from the prior. First let's do the one for the $L_2$ norm, and then we will generalize to the $L_1$. We can write the prior on $W$ as:
+The two penalization terms comes from the prior, and can be obtained through the posterior. First let's do the one for the $L_2$ norm, and then we will generalize to the $L_1$. We can write the prior on $W$ as:
 
-$$p(W)= \frac{1}{\tau^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{tr((W-W_0)(W-W_0)^T)}{2\tau^2}} = \frac{1}{\tau^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{\sum_i^N{w_i^T \cdot w_i}}{2\tau^2}} $$
+$$p(W)= \frac{1}{\tau^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{tr((W-W_0)(W-W_0)^T)}{2\tau^2}} = \frac{1}{\tau^2(2\pi)^{\frac{D}{2}}} \cdot e^{-\frac{\sum_i^D{(w_i - w_i^0)^T \cdot (w_i - w_i^0)}}{2\tau^2}} $$
 
 If we multiply with the expression computed above for the likelihood $p(\mathbf{T}|\mathbf{X}, \mathbf{W})$ we get:
 
 
-$$ p(\mathbf{W}|\mathbf{X}, \mathbf{T}) \propto e^{-\frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}-\frac{1}{2\tau^2}\sum_i^N{w_i^T \cdot w_i}}$$
+$$ p(\mathbf{W}|\mathbf{X}, \mathbf{T}) \propto e^{-\frac{1}{2\sigma^2}\sum_i^D{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}-\frac{1}{2\tau^2}\sum_i^D{(w_i - w_i^0)^T \cdot (w_i - w_i^0)}}$$
 
-Where w have disregarded the multiplicatove factor in front of the exponent, because by taking the log will lead to a costant factor. Now we take the negative logarithm:
+Where we have disregarded the multiplicative factor in front of the exponential, because by taking the log will lead to a costant factor. Now we take the negative logarithm:
 
-$$-log(p(\mathbf{W}|\mathbf{X}, \mathbf{T})) \propto \frac{1}{2\sigma^2}\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})} + \frac{1}{2\tau^2}\sum_i^N{w_i^T \cdot w_i}$$
+$$-log(p(\mathbf{W}|\mathbf{X}, \mathbf{T})) \propto \frac{1}{2\sigma^2}\sum_i^D{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})} + \frac{1}{2\tau^2}\sum_i^D{(w_i - w_i^0)^T \cdot (w_i - w_i^0)}$$
 
-Where we can easily see the penalizing factor:
+If we assume the mean $W_0$ to be $0$ we can write the penalizing factor:
 
-$$\frac{1}{2\tau^2}\sum_i^N{w_i^T \cdot w_i} = \frac{1}{2\tau^2}\sum_i^N{\norm{w_i}_{L_2}}$$
+$$\frac{1}{2\tau^2}\sum_i^D{w_i^T \cdot w_i} = \frac{1}{2\tau^2}\sum_i^D{\norm{w_i}^2_{L_2}}$$
 
-Of course the proper extension to the $L_1$ norm will lead to the penalizing term:
+By considering a non zero mean the penalizing factor is just the Frobenius norm of the difference of the matrix with its mean:
 
-$$\frac{1}{2\tau^2}\sum_i^N{|w_i|} = \frac{1}{2\tau^2}\sum_i^N{\norm{w_i}_{L_1}}$$
+$$\frac{1}{2\tau^2}\sum_i^D{w_i^T \cdot w_i} = \frac{1}{2\tau^2}\norm{\mathbf{W-W_0}}^2_{F}$$
 
+ course the proper extension to the $L_1$ norm will lead to the penalizing term:
 
-Using $L_1$ norm will perform some kind of dimensionality reduction by setting some variables to 0, while the quadratic term will try to balanced the parameter.
-We can see this effect by inspecting the derivative of the penalizing term: for the $L_1$ norm it is always constant, while for the $L_2$ it decreases as we get closer to zero, this means that in $L_2$ optimizing values that are close to the origin does not get me any decrease in the penalazing term, while if I take a value far away from the origin then this will decrease a lot my penalizing term. 
+$$\frac{1}{2\tau^2}\sum_i^D{|w_i-w_i^0|} = \frac{1}{2\tau^2}\sum_i^D{\norm{w_i-w_i^0}_{L_1}}$$
 
-We can also see visually by looking at the iso-contours of these functions in figure \ref{img_question4}.
+Which correspond to a Laplace distribution. From now on I will assume $W_0 = 0$ for simplicity. Using $L_1$ norm will perform some kind of dimensionality reduction by setting some variables to 0, while the quadratic term  in $L_2$ will try to balanced the parameter.
+We can see this effect by inspecting the derivative of the penalizing term: for the $L_1$ norm it is always constant, while for the $L_2$ it decreases as we get closer to zero:
+
+$$\partial \norm{w_i}_{L_1} = \pm1 \,\,\,\,\,\,\,\,\,\,\,\,\, \partial \norm{w_i}_{L_2} = 2 w_i$$
+
+this means that in $L_2$ optimizing values that are already close to the origin does not get me any relevant decrease in the penalazing term, while if I take a value far away from the origin then this will decrease a lot my penalizing term. For $L_1$ any optimization has the same effect in reducing the penalizing term because it does not depend on the position of the weight vector I'm optimizing.
+
+We can take another perspective by looking at the distribution, in fact the Laplace one has a peak in the origin, so it will spread most of its mass there, making weights zero more likely. The gaussian still has a peak in the origin but it is more smooth.
+Since the optimization of the log likelihood can be seen as a constrained optimization problem then transformed using Lagrange multipliers, we can also see visually by looking at the iso-contours of the constraining functions in figure \ref{img_question4}.
 
 ![Showing iso-contours of value 1 for the $L_1$ norm (green), and for $L_2$ (blue).\label{img_question4}](images/question4.pdf){width=70%}
 
 We can see that the corners of the square lie on the axis, so where one of the two variables is zero.
 
-$w^Tw$ : for the $L_2$ norm which is just the Froebenius norm
-$|w|_F$
-
-These two priors will introduce an additive term depending on the model parameter $|w|$, which would be of second order for the $L_2$ metric, and a first order $L_1$ for the other one.
-
 ### Question 5
 
-We will use the square completion to perform this task. So we assume that the output is normal with the following parametrs:
+We will use the square completion to perform this task. Since the product of gaussian is stilla gaussian we assume the posterior to be normal with the following parametrs:
 
-$$p(W) = \frac{1}{\xi} \cdot e^{-\frac{1}{2}tr(V^{-1}(W-W_0)\Sigma^{-1}(W-W_0)^T)} =$$
+$$p(\mathbf{W}|\mathbf{T},\mathbf{X}) = \mathcal{N}(\mathbf{M},\mathbf{\Sigma},\mathbf{V}) =$$
+$$=\frac{1}{\xi} \cdot e^{-\frac{1}{2}tr(V^{-1}(W-M)\Sigma^{-1}(W-M)^T)} =$$
 
-$$ =\frac{1}{\xi} \cdot e^{-\frac{1}{2}tr(V^{-1}W\Sigma^{-1}W^T)}e^{\cdot tr(V^{-1} W\Sigma^{-1}W_0^T)}e^{-\frac{1}{2}tr(V^{-1} W_0\Sigma^{-1}W_0^T)}$$
+$$ =\frac{1}{\xi} \cdot e^{-\frac{1}{2}tr(V^{-1}W\Sigma^{-1}W^T)}e^{\cdot tr(V^{-1} W\Sigma^{-1}M^T)}e^{-\frac{1}{2}tr(V^{-1} M\Sigma^{-1}M^T)}$$
 
 Where $\xi$ is just the normlaizing factor to make the integral of the function 1.
 
-Now we will take the product of the prior over $W$, and the likelihood $p(\mathbf{t_i}|\mathbf{x_i}, \mathbf{W})$.
+Now we will take the product of the prior over $W$, and the likelihood $p(\mathbf{t_i}|\mathbf{x_i},\mathbf{W} )$.
 
-$$ p(\mathbf{t_i}) = e^{-\frac{1}{2 \sigma^2} (\mathbf{t_i}-W\mathbf{x_i})^T(\mathbf{t_i}-W\mathbf{x_i})} \cdot e^{-\frac{1}{2\tau^2}tr((W-W_0)(W-W_0)^T)}  $$
+$$ p(\mathbf{W}|\mathbf{t_i},\mathbf{x_i}) = e^{-\frac{1}{2 \sigma^2} (\mathbf{t_i}-W\mathbf{x_i})^T(\mathbf{t_i}-W\mathbf{x_i})} \cdot e^{-\frac{1}{2\tau^2}tr((W-W_0)(W-W_0)^T)}  $$
 $$= e^{-\frac{1}{2 \sigma^2} tr((\mathbf{t_i}-W\mathbf{x_i})(\mathbf{t_i}-W\mathbf{x_i})^T)} \cdot e^{-\frac{1}{2\tau^2}tr((W-W_0)(W-W_0)^T)}  $$
 
-Since they have the same dimensions, we can do merge the two traces:
+Since $(\mathbf{t_i}-W\mathbf{x_i})(\mathbf{t_i}-W\mathbf{x_i})^T)$ and $(W-W_0)(W-W_0)^T$ ($D \prod D$), we can merge the two traces:
 
 $$ p(\mathbf{W}|\mathbf{t_i},\mathbf{x_i}) = e^{-\frac{1}{2 \sigma^2} (\mathbf{t_i}-W\mathbf{x_i})^T(\mathbf{t_i}-W\mathbf{x_i})} \cdot e^{-\frac{1}{2\tau^2}tr((W-W_0)(W-W_0)^T)} = $$
 $$= e^{-\frac{1}{2 \sigma^2} tr((\mathbf{t_i}-W\mathbf{x_i})(\mathbf{t_i}-W\mathbf{x_i})^T)} \cdot e^{-\frac{1}{2\tau^2}tr((W-W_0)(W-W_0)^T)} = $$
@@ -162,24 +166,39 @@ $$= e^{-tr(W (\frac{1}{2\tau^2}\mathbf{I} + \frac{1}{2\sigma^2} \mathbf{x_i}\mat
 e^{ tr(W(\frac{1}{\sigma^2} \mathbf{x_i} \mathbf{t_i}^T +\frac{1}{\tau^2} W_0^T))}
 e^{-tr(\frac{1}{2 \sigma^2} \mathbf{t_i}\mathbf{t_i}^T + \frac{1}{2\tau^2}W_0 W_0^T)}$$
 
-Then assuming the independence of the $t_i$ we can get to the full posterior.
+Then assuming the independence of the $\mathbf{t_i}$ we can get to the full posterior, noting that the only thing that changes is the likelyhood (the product of each $p(\mathbf{t_i}|\mathbf{x_i},\mathbf{W} )$), which turns into summation in the exponent.
 
-$$p(\mathbf{W}|\mathbf{T},\mathbf{X}) = e^{-tr(W (\frac{1}{2\tau^2}\mathbf{I} + \frac{1}{2\sigma^2} \sum_i{\mathbf{x_i}\mathbf{x_i}^T})W^T)}
+$$p(\mathbf{W}|\mathbf{T},\mathbf{X}) = e^{-tr(W (\frac{1}{2\tau^2}\mathbf{I} + \frac{1}{2\sigma^2} \sum_i^N{\mathbf{x_i}\mathbf{x_i}^T})W^T)}
 e^{ tr(W(\frac{1}{\sigma^2} \mathbf{x_i} \mathbf{t_i}^T +\frac{1}{\tau^2} W_0^T))}
 e^{-tr(\frac{1}{2 \sigma^2} \mathbf{t_i}\mathbf{t_i}^T + \frac{1}{2\tau^2}W_0 W_0^T)}$$
 $$p(\mathbf{W}|\mathbf{T},\mathbf{X}) = e^{-tr(W (\frac{1}{2\tau^2}\mathbf{I} + \frac{1}{2\sigma^2} \mathbf{X}^T\mathbf{X})W^T)}
 e^{ tr(W(\frac{1}{\sigma^2} \mathbf{X}^T \mathbf{T} +\frac{1}{\tau^2} W_0^T))}
 e^{-tr(\frac{1}{2 \sigma^2} \mathbf{T}^T\mathbf{T} + \frac{1}{2\tau^2}W_0 W_0^T)}$$
 
-Where we substituted $\sum_i{\mathbf{x_i} \mathbf{t_i}^T}$ with $\mathbf{X}^T \mathbf{T}$.
-This can be demostrated to be true, and so I do in appendix A.
+Where we substituted $\sum_i^N{\mathbf{x_i} \mathbf{t_i}^T}$ with $\mathbf{X}^T \mathbf{T}$.
+This can be demostrated to be true, and so I did in [appendix A](#appendix_A).
+Now we can retrieve the variance and the mean of our prior by comparing the first expression with the derived one, and then match the elements. For the second order elements we have:
 
-Now we can retrieve the variance and the mean of our prior.
+$$\frac{1}{2} V^{-1}W\Sigma^{-1}W^T =  W (\frac{1}{2\tau^2}\mathbf{I} + \frac{1}{2\sigma^2} \mathbf{X}^T\mathbf{X})W^T$$
 
-$$\EX(\mathbf{W}|\mathbf{T},\mathbf{X}) = $$
-$$\mathrm{Var}(\mathbf{W}|\mathbf{T},\mathbf{X}) = $$
+We can derive that $\mathbf{V} = \mathbf{I}$, and $\mathbf{\Sigma} = (\frac{1}{\tau^2}\mathbf{I} + \frac{1}{\sigma^2} \mathbf{X}^T\mathbf{X})^{-1}$. Now we can compute the mean:
 
-Z represents the regularizing term for our posterior distribution and, from Bayes rule, it must be equal to the evidence. But we are not intrested in it for the computation of the posterior, and it does not affect our derivation.
+$$V^{-1} W\Sigma^{-1}M^T = W(\frac{1}{\sigma^2} \mathbf{X}^T \mathbf{T} +\frac{1}{\tau^2} W_0^T)$$
+$$\Sigma^{-1}M^T = (\frac{1}{\sigma^2} \mathbf{X}^T \mathbf{T} +\frac{1}{\tau^2} W_0^T)$$
+$$M^T = \Sigma \cdot (\frac{1}{\sigma^2} \mathbf{X}^T \mathbf{T} +\frac{1}{\tau^2} W_0^T)= \frac{1}{\sigma^2} \Sigma \cdot \mathbf{X}^T \mathbf{T} +\frac{1}{\tau^2} \Sigma \cdot W_0^T)= $$
+$$M^T = \frac{1}{\sigma^2} (\frac{1}{\tau^2}\mathbf{I} + \frac{1}{\sigma^2} \mathbf{X}^T\mathbf{X})^{-1} \cdot \mathbf{X}^T \mathbf{T} +\frac{1}{\tau^2} (\frac{1}{\tau^2}\mathbf{I} + \frac{1}{\sigma^2} \mathbf{X}^T\mathbf{X})^{-1} \cdot W_0^T)$$
+
+So in the end the posterior is:
+
+$$\mathcal{N}(\mathbf{M},\mathbf{\Sigma},\mathbf{I})$$
+
+Z represents the regularizing term for our posterior distribution and, from Bayes rule, it must be equal to the evidence. But we are not intrested in it for the computation of the posterior, and it does not affect our derivation since it does not depend on $\mathbf{W}$.
+The maximum likelihood approach gives a result that is the mean of the posterior when the prior is an uninformative one uniform distribution (we can think of this as having the $\tau^2 \to \infty$). So the resulting mean is then: 
+
+$$M^T = \frac{1}{\sigma^2} (\frac{1}{\infty}\mathbf{I} + \frac{1}{\sigma^2} \mathbf{X}^T\mathbf{X})^{-1} \cdot \mathbf{X}^T \mathbf{T} +\frac{1}{\infty} (\frac{1}{\infty}\mathbf{I} + \frac{1}{\sigma^2} \mathbf{X}^T\mathbf{X})^{-1} \cdot W_0^T)=$$
+$$= \frac{1}{\sigma^2} (\frac{1}{\sigma^2} \mathbf{X}^T\mathbf{X})^{-1} \cdot \mathbf{X}^T \mathbf{T} = (\mathbf{X}^T\mathbf{X})^{-1} \cdot \mathbf{X}^T \mathbf{T}$$
+
+Which is just the maximum likelihood solution.
 
 ### Question 6
 
@@ -521,7 +540,8 @@ Moreover the right plot is a little bit squahsed toward the y_axis compared to t
 
 \pagebreak
 
-# Appenddix A
+# Appenddix A {#appendix_A}
+
 
 ## Proof of $\sum_i{\mathbf{x_i} \mathbf{x_i}^T}=\mathbf{X}^T \mathbf{X}$
 
