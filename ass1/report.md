@@ -31,7 +31,7 @@ header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left
  - Q21 ✔
  - Q22 ✔ if I have time review again
  - Q23 ✔
- - Q24 ✔ wait for data
+ - Q24 ✔
 -->
 
 ## Part I : The Prior
@@ -549,13 +549,16 @@ The prior encodes the preferences about the parameter of the linear boundaries t
 
 I experimented by changing the covariance matrix. Obviously it makes no sense for $M_0$ and neither for $M_1$ because it has only one parameter. The covariance I used was:
 
-$$ $$
+$$ \mathbf{C} = \sigma^2 \begin{pmatrix}
+1 & -0.9 &-0.5 \\ -0.9 & 1 & 0.5\\ -0.5 & 0.5 & 1\end{pmatrix}$$
 
+For $M_2$ I restricted $\mathbf{C}$ to the top left $2\prod2$ square submatrix.
 We can see a comparison between the model having independent parameters, and one having as covariance $\mathbf{C}$ in figure \ref{img_evidence_covariance_comparision}. 
 
+![Comparison, in a restricted portion of the domain, for model 2 and 3 between when parameters are drawn independently ($M_2$ and $M_3$), and the one with a non diagonal covariance matrix ($M_2'$ and $M_3'$). Mean is zero in both cases.\label{img_evidence_covariance_comparision}](evidence_covariance_comparision.pdf)
 
-
-![Comparison for model 2 and 3 between when parameters are drawn independently ($M_2$ and $M_3$), and the one with a non diagonal covariance matrix ($M_2'$ and $M_3'$). Mean is zero in both cases.\label{img_evidence_covariance_comparision}](evidence_covariance_comparision.pdf)
+If we compare $M_2$ with $M_2'$ we can see that they do not differ a lot in terms of dataset spanned, but puts a different probability mass on each of these. This means that the covarianc we choosed encodes some preferences for those models we have increased the probability.
+In comparing $M_3$ with $M_3'$ we can make the same considerations as before, but here we also have some sharp differences in the shape of the distribution. It might be that the bias enhance th probability of some datasets that were not considered as likely before.
 
 #### Changing mean
 
