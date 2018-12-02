@@ -27,7 +27,7 @@ class Evidence(Thread):
             if d % 10 == 0 :
                 print("\t" + str(self.model_n) + ":" + str(d))
 
-            self.result[d, self.model_n] = self.integral(self.x,self.y[d,:],10000000)
+            self.result[d, self.model_n] = self.integral(self.x,self.y[d,:],1000000)
             d = d + 1
         print("finished" + str(self.model_n))
 
@@ -104,8 +104,11 @@ def montecarlo_integral_M3(x,y,iteration=10**8):
     y = np.squeeze(np.asarray(y))
     result = 0
     iteration = int(iteration)
-    W = np.random.normal(MEAN,STD_DEV,iteration*3)
-    W.shape = (3,iteration)
+    B = STD_DEV*STD_DEV*np.matrix([[1,-0.9,-0.5],[-0.9,1,0.5],[-0.5,0.5,1]])
+    W = np.random.multivariate_normal([0,0,0], B,iteration)
+    W = W.T    
+    #W = np.random.normal(MEAN,STD_DEV,iteration*3)
+    #W.shape = (3,iteration)
     XW = x.dot(W)
     
     i = 0
@@ -125,10 +128,11 @@ def montecarlo_integral_M2(x,y,iteration=10**8):
     y = np.squeeze(np.asarray(y))
     result = 0
     iteration = int(iteration)
-
-    W = np.random.normal(MEAN,STD_DEV,iteration*2)
-
-    W.shape = (2,iteration)
+    B = STD_DEV*STD_DEV*np.matrix([[1,-0.9,-0.5],[-0.9,1,0.5],[-0.5,0.5,1]])
+    W = np.random.multivariate_normal([0,0], B[0:2,0:2],iteration)
+    W = W.T
+    #W = np.random.normal(MEAN,STD_DEV,iteration*2)
+    #W.shape = (2,iteration)
     XW = np.dot(x[:,0:2],W)
     
     i = 0
@@ -150,9 +154,10 @@ def montecarlo_integral_M1(x,y,iteration=10**8):
     y = np.squeeze(np.asarray(y))
     result = 0
     iteration = int(iteration)
-
-    W = np.random.normal(MEAN,STD_DEV,iteration)
-
+    B = np.matrix([[1,-0.9,-0.5],[-0.9,1,0.5],[-0.5,0.5,1]])
+    W = np.random.normal(0, STD_DEV*B[0,0],iteration)
+    W = W.T    
+    #W = np.random.normal(MEAN,STD_DEV,iteration)
     W.shape = (1,iteration)
     XW = np.dot(x[:,0:1],W)
 
@@ -173,6 +178,24 @@ def montecarlo_integral_M1(x,y,iteration=10**8):
 
 
 def compute_evidence(x,y):
+
+    models_n = 4
+    datasets_n = y.shape[0]
+    result_size = (datasets_n,models_n)
+    result = np.zeros(result_size)
+
+    threads = [Evidence2(montecarlo_integral_M1,1,x.copy(),y.copy(),result),Evidence2(montecarlo_integral_M2,2,x.copy(),y.copy(),result),Evidenc2e(montecarlo_integral_M3,3,x.copy(),y.copy(),result)]
+
+    for t in threads:
+        t.start()
+        print("Started")
+
+    for t in threads:
+        t.join()
+        print("Joined")
+
+    return result
+
 
     models = [likelyhood_M0,likelyhood_M1,likelyhood_M2,likelyhood_M3]
 
@@ -225,7 +248,7 @@ if __name__ == '__main__':
     #print(montecarlo_integral_M1(X,y[57,:],iteration=1e7))
 
     evidence = compute_evidence_multithread(X,y)
-    np.save("evidenceE7M55", evidence)
+    np.save("evidenceE6COV1", evidence)
     print("finised all")
     #print(likelyhood_M3(x, y[57,:], np.array([1,2,3])))
     #print(vect_likelyhood_M3(X, y[57,:], np.array([1,2,3])))

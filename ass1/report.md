@@ -11,11 +11,11 @@ header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left
  - Q3 ✔
  - Q4 ✔ finsih with last consideration about corners
  - Q5 ✔
- - Q6
+ - Q6 ask the man
  - Q7 ✔
- - Q8
- - Q9
- - Q10
+ - Q8 ✔ to compare, maybe can expand
+ - Q9 ✔
+ - Q10 ✔
  - Q11
 
  - Q12 ✔
@@ -29,9 +29,9 @@ header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left
  - Q19 to finish
  - Q20 ✔
  - Q21 ✔
- - Q22
- - Q23
- - Q24 da finire con programmazione
+ - Q22 ✔ if I have time review again
+ - Q23 ✔
+ - Q24 ✔ wait for data
 -->
 
 ## Part I : The Prior
@@ -204,11 +204,10 @@ Which is just the maximum likelihood solution.
 
 This is a prior on functions, where a function is seen as a collection of infinite random variables, and for any subset of it the joint probability is a multivariate gaussian. To comment the prior we will analize its two components.
 The least important is the mean, which is set arbitrarely to 0, which means that the functions we'll have zero mean.
-The most important component is the covariance, that is computed as a kernel function. The kernel function should implement some kind of "closeness measure" between two points $x_i$ and $x_j$, with the kernel having high values id $x_i$ is similar to $x_j$, low otherwise. This function sets the correlation between two points, so if $x_i$ and $x_j$ are close, their values will be high correlated, on the opposite side if $k(x_i,x_j)=0$, then the two values $y_i$ and $y_j$ are independent (works only assuming the distribution normal).
+The most important component is the covariance, that is computed as a kernel function. The kernel function should implement some kind of "closeness measure" between two points $x_i$ and $x_j$, with the kernel having high values id $x_i$ is similar to $x_j$, low otherwise. This function sets the correlation between two points, so if $x_i$ and $x_j$ are close, their values will be high correlated, on the opposite side if $k(x_i,x_j)=0$, then the two values $y_i$ and $y_j$ are independent (works only assuming the distribution normal). The effect of the covariance is shown in figure \ref{img_covariance_effect} where we can see how the mean on the marginal variable depends on the value of the first one.
 Basically the covariance function defines a transfer of information between one point and the other based on their distance.
 
-##### Put figure(s) here
-
+![Effect of conditioning one variable $x_2$ by another one $x_1$ when they are correlated.\label{img_covariance_effect}](images/marginal_prior.pdf)
 
 ### Question 7
 
@@ -224,47 +223,54 @@ I can use the chain rule one again on the first term to get:
 
 $$p(\mathbf{T}, \mathbf{f}|\mathbf{X}, \mathbf{\theta})p(\mathbf{X})p(\mathbf{\theta}) = p(\mathbf{T}| \mathbf{f},\mathbf{X},\mathbf{\theta})p(\mathbf{f}|\mathbf{X},\mathbf{\theta})p(\mathbf{X})p(\mathbf{X})p(\mathbf{\theta})$$
 
-Where we know that $p(\mathbf{f}|\mathbf{X},\mathbf{\theta})$ is a multivariate normal distribution for the definition of the gaussian processes.
+A graphical model of these assumption can be found in figure \ref{img_graphical_model}.
+From the last formula we know that $p(\mathbf{f}|\mathbf{X},\mathbf{\theta})$ is a multivariate normal distribution for the definition of the gaussian processes.
 While we can get some insights in the term $p(\mathbf{T}| \mathbf{f},\mathbf{X},\mathbf{\theta})$ by looking at the relation between $t_i$ and $f_i$. Since $t_i$ depends on  $f_i$ and the latter, being conditioned, is known.
 
 $$ p(\mathbf{t_i} = t^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta}) = p(f^* + \varepsilon = t^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta}) = p(\varepsilon = t^* - f^* | \mathbf{f} = f^*,\mathbf{X},\mathbf{\theta})$$
 So this term is also gaussian.
 
-![Graphical model of the joint likelihood in Question 7.](images/variable_gm.pdf){ width=40% }
+![Graphical model of the joint likelihood in Question 7.\label{img_graphical_model}](images/variable_gm.pdf){ width=40% }
 
 ### Question 8
 
 $$p(\mathbf{T}| \mathbf{X}, \mathbf{\theta}) = \int{p(\mathbf{T}|\mathbf{f}, \mathbf{X}, \mathbf{\theta})p(\mathbf{f}| \mathbf{X}, \mathbf{\theta}) df}$$
 
 The integral has the meaning of a weighted average of the likelyhood of the data over all possible function, where the weight is given by the prior on the functions.
-The uncertainty is reflected in the covariance matrix of the marginalized distribution, and it has 2 independent components: one comes from the noise $\varepsilon$, and the other comes from the uncertainty we have on the data that is can be seen as uncertainty on the shape of the functions of the gaussian process that we marginalize out.
+The uncertainty is reflected in the covariance matrix of the marginalized distribution, and it has 2 independent components: one comes from the noise $\varepsilon$, and the other comes from the uncertainty we have on the data that can be seen as uncertainty on the shape of the functions resulting from the gaussian process,, this last term is the result of the marginalization of the functions.
 We still condition in $\theta$ because we assumed it as a constant, it could be marginalized if we have had assumed it was a random variable. In this form the marginal distribution is a function of $\theta$, which is useful for performing hyperparameter optimization.
 
 ### Question 9
 
 ![Prior over the parameters, it is a $\mathcal{N}(\mathbf{0},\mathbf{I})$.\label{img_prior}](images/prior.pdf)
 
-
-![Posterior over the parameters after observing one point with $\sigma = 0.1$](images/posterior_2_v01.pdf)
-
-The prior is shown in figure \ref{img_prior}. Then the evolution of the prior is shown in figure \ref{img_posterior}, where le left column is the posterior contour plot, and on the right are the samples taken from it.
+The prior is shown in figure \ref{img_prior}. Then the evolution of the posterior is shown in figure \ref{img_posterior}, where le left column is the posterior contour plot, and on the right are the samples taken from it.
 
 ![In the left column the posterior over the parameters, the true value of the parameters is marked by a white dot. The left column represent samples from the posterior, and the gray line represents the line with the true parameters.This is the case having the error with $\sigma = 0.3$\label{img_posterior}](images/posterior_samples.pdf)
 
-There are 2 main effects in adding data to my model :
+There are two main effects in adding data to my model :
 
  - The first one is the fact that the posterior moves its center towards the true value of my weights pair
  - The variance of the posterior shrinks as I add more points
 
 These two effects can be explained easily. The latter occurs because as we get more data we are more certain about the model, our belief increases, and so our variance reduces. This rate of change depends on the noise in our data.
-The first effect is determined by the fact that our belief changes as we see more points. Starting from the prior at the origin, we move towards the pair that better fits our data. The prior encodes some bias that fades away as we get more and more points.
+The first effect is determined by the fact that our belief changes as we see more points. Starting from the prior at the origin, we move towards the pair that better fits our data. The prior encodes some bias that gets less relavant(that we forget) as we get more and more points. We can think of this as a iterative process, we start with our belief that is the prior, then we obser our data point, and now our belief is the posterior. Then the posterior is used as a prior in the next iteration where we observe the new data point. This process goes on and on until we observe all data.
+
+![Posterior evolution when observing 6 points with $\sigma = 0.1$\label{img_posterior_sd01}](images/posterior_sd01.pdf){height=90%}
+
+![Posterior evolution when observing 6 points with $\sigma = 0.7$\label{img_posterior_sd07}](images/posterior_sd07.pdf){height=90%}
+
+The effect of changing the error standar deviation $\sigma$ is shown in figure \ref{img_posterior_sd01} and \ref{img_posterior_sd07}. We can see that a big uncertainty in the data reflects to uncertainty in the posterior, and in the end uncertainty in the parameter. We can also see that the convergence of the posterior distribution over the right parameter value is slower for the model with high $\sigma$.
 
 
 ### Question 10
 
-The lenghtscale defines a "unit of measure" between the two points. Since it divides the difference between two points, if the lenghtscale is low the two points will be less correlated, if the value of the lenghtscale is high, then they will be highly correlated.
+The result are shown in figure \ref{img_gp_samples}. The lenghtscale defines a "scale" for measuring the closeness of two points.
+We can relate the value of the lenghtscale to the numerical value of the squared exponential. Since it is the denominator of a (negative) exponent, if the value of the exponent is high then the squared exponential will be low (close to zero) otherwise if the exponenti is small, then the value of the squared exponential will be high.
 
-![Samples from a gaussian process](images/gp_samples.pdf)
+Since it divides the difference between two points, if the lenghtscale is low the two points will be less correlated, if the value of the lenghtscale is high, then they will be highly correlated.
+
+![Samples from a gaussian process using different lenghtscales. For all of the picture I have used $\sigma_f^2 = 1$. \label{img_gp_samples}](images/gp_samples2.pdf)
 
 ### Question 11
 
@@ -496,21 +502,31 @@ By choosing that distribution for the prior we again assume that all the paramet
 Since parameter are independent and with mean 0, we don't restrict the orientation of the lines in $M_2$ and $M_3$. If we had choosen a non diagonal covariance matrix we would have gotten a bias in the orientation of the lines, because the ratio of the parametrs of the line would be biased. In the extreme case where there is a relation between two parameters of $\theta$, the resulting boundaries form a pencil of lines (either parallel or incident). 
 For the models, the fact the the mean is 0 means that the normal vector $\theta$ is not biased. If the mean had not been non zero, that would have ment a biased in the direction of $\theta$. We can see this effect in $M_1$, where if the mean is positive, then the model assigns more porobability to the datasets having positive $y_i$ on the right than the other one, because the parameter theta is more likely positive.
 For $M_2$ the effect is that, if we sample a lot of paramerts, we have an average decision boundary with parameters given by the mean.
+See figure \ref{img_effects_changing_mean} to see the effect of changing mean, and figure \ref{img_effects_cov} for the effect of the covariance.
 
 
 ### Question 22
 
-![Shown here are the plots of the evidence of each dataset per each model. On the left using the order of the datasets as they were generated, on the right using the same ordering procedure proposed in the paper.\label{img_evidence}](images/evidences_M00.pdf)
+![Shown here are the plots of the evidence of each dataset per each model. On the left using the order of the datasets as they were generated, on the right using the same ordering procedure proposed in the paper.\label{img_evidence_M00}](images/evidences_M00.pdf)
 
-If we sum up the evidence over all dataset, for each model we get 1 (obviously in practice there is a small error, in my case on the order of $10^4$). That is beacause this is a probabilistic distribution, and so must sum up to 1. We can interpret this distribution from a generative prospective: if we would sample the model parameters at random, the probability of generating dataset $D_i$ is $p(D_i|M_i)$.
+If we sum up the evidence over all dataset, for each model we get 1 (obviously in practice there is a small error, in my case on the order of $10^5$). That is beacause this is a probabilistic distribution, and so must sum up to 1. We can interpret this distribution from a generative prospective: if we would sample the model parameters at random, the probability of generating dataset $D_i$ is $p(D_i|M_i)$.
 
-There there are few comment about figure \ref{img_evidence}, where we can see that the left plot is symmetric, and given how the datasets are indexed in that figure, that means that the probability of a dataset doesn't change if we filp the sign to all the $y_i$ in a dataset. This of course makes sense because the only thing that changes is the separating line sign, and since the distribution of the parameter is symmetric the probability of obtainig $\theta_i$ or $-\theta_i$ is the same.
+There there are few comment about figure \ref{img_evidence_M00}, where we can see that the left plot is symmetric, and given how the datasets are indexed in that figure, that means that the probability of a dataset doesn't change if we filp the sign to all the $y_i$ in a dataset. This of course makes sense because the only thing that changes is the orientation of the normal to the decision boundary $\mathbf{\theta}^T \mathbf{x}$, and since the distribution of the parameter is symmetric the probability of obtainig $\mathbf{\theta}$ or $-\mathbf{\theta}$ is the same.
 
-Another comment is the shape of the plot on the right size that I have also plotted in figure \ref{img_evidence_log} using a log scale to better highlight its feature. We see that $M_3$ has a higher peak in some datasets, while $M_2$ has its maximum value lower than the one of $M_3$, but on a wider range in the dataset axis. The same consideration for $M_1$ with respect to $M_2$, while $M_0$ is completely flat at a constant value of $1/512$. We also see that $M_3$ assigns some probability distribution to the datasets where most of the probability mass of $M_2$ and $M_1$ lies, but the probability of $M_3$ is lower than the one assigned by $M_2$ or $M_1$. Here lies the automatic Occam's razor, we choose the model that puts the most probability on the datasets that we are intrested in, which is usually the simplest.
+Another comment is the shape of the plot on the right side that I have also plotted in figure \ref{img_evidence_log} using a log scale to better highlight its feature.
 
-![Same as the right plot in figure \ref{img_evidence} but using log scale on the y axis.\label{img_evidence_log}](images/evidences_M00_log.pdf)
+We can see how there is a range over which almost all models from $M_1$ to $M_3$ have a high probability. These are the linearly separable datasets (or almost-linearly). While in all the other dataset $M_0$ puts more probability than the other models.
 
-[comment]: <> (It is also possible to understand how the evidence discourages overcomplex models and therefore embodies Occam’s Razor by using the following interpretation.  The 			evidence is the probability that if you randomly selected parameter values from your model class, you would generate data set D.)
+By looking at the range of linear datasets we see that often the probability of $M_1$ is greater than the one of $M_2$ which is greater than the one of $M_3$. These are the common datasets explained by all the models, that is all the dataset explained by $M_1$. And since $M_1$ is the simplest it will have more probability mass to spread in this range.
+Then there are the datasets explained only by $M_2$, in this range $p(M_1) < p(M_3) < p(M_2)$, and then the datasets explained only by $M_3$ where it's true $p(M_1) < p(M_2)< p(M_3)$.
+
+[comment2]: <> (this is only for stupid sintax highlighting of gedit. We see that $M_3$ has a higher peak in some datasets, while $M_2$ has its maximum value lower than the one of $M_3$, but on a wider range in the dataset axis. The same consideration for $M_1$ with respect to $M_2$, while $M_0$ is completely flat at a constant value of $1/512$. We also see that $M_3$ assigns some probability distribution to the datasets where most of the probability mass of $M_2$ and $M_1$ lies, but the probability of $M_3$ is lower than the one assigned by $M_2$ or $M_1$.)
+
+![Same as the right plot in the previous figure but using log scale on the y axis.\label{img_evidence_log}](images/evidences_M00_log.pdf)
+
+Here lies the automatic Occam's razor, we choose the model that puts the most probability on the datasets that we are intrested in, which as we have seen, is usually the simplest among the one that can explain it.
+
+[comment]: <> (It is also possible to understand how the evidence discourages overcomplex models and therefore embodies Occam’s Razor by using the following interpretation.  The evidence is the probability that if you randomly selected parameter values from your model class, you would generate data set D.)
 
 ### Question 23
 
@@ -519,24 +535,41 @@ Another comment is the shape of the plot on the right size that I have also plot
 We can comment the most likely and the least likely for each models, represented in figure \ref{img_most_probable_datasets}. Of course we do not have a maximum and minimum in the $M_0$ case, since all the models are equally probable, so they are not shown in the figure. 
 For $M_1$ the most likely is one that can be separated by a vertical line, that is the model that it encodes.
 For $M_2$ the most likely is one that can be separated by a line that passes through the origin, again because the model it represents divide the space with a line crossing the origin.
-For $M_3$ the most likely is the one with all $+1$ (or $-1$). This makes because we have also the bias term, and having a big variance this can move the line very far away from the square $[-1,1]\times[-1,1]$ where the data lies. If the boundary don't cut in half the data it "classifies" all points as $-1$ or $+1$.
+For $M_3$ the most likely is the one with all $+1$ (or $-1$). This makes because we have also the bias term, and having a big variance this can move the line very far away from the square $[-1,1]\times[-1,1]$ where the data lies. If the boundary don't cut in half the data it "classifies" all points as $-1$ or $+1$ intuitively the average decision boundary should be $y =\pm x \pm 1$[^average], which does not cut the square $[-1,1]\times[-1,1]$.
+
+[^average]: This can be shown by taking the expected value of the line $\EX(\theta_1 x + \theta_2 y  + \theta_3) = \mu x + \mu y  + \mu = 0$, then we should take the limit $\mu \to 0$, but we can divide by $\mu$ prior and obtain $\pm x + \pm y  + \pm = 0$. 
+
 While for the least probable dataset we see that it represent non-linerly separable configuration, which makes sense, because none of the model is likely to generate it, since they represent linear boundaries. 
 
 ### Question 24
 
-The prior encodes the preferences about the parameter of the linear boundaries that each model encodes. So changing the mean, will make the "average" boundary the one having as parameter, the one specified by the mean. If we change the covariance, we introduce some dependance in the parameters of the decision boundary, which can cause the line to have a "preferred" direction.
-The result of changing the mean to $5$, are depicted in figure \ref{img_evidence_mean_5}. First of all we can see that we have lost the symmetricity in the left plot, because a having changed the mean, we encoded come preference in the direction of the normal of the decision boundary, so we will prefer datasets for which negative $y_i$ lies below the line.
-Moreover the right plot is a little bit squahsed toward the y_axis compared to the one of figure \label{img_evidence}, we can see a scaled version in figure \ref{img_evidence_mean_5_closer}.
+The prior encodes the preferences about the parameter of the linear boundaries that each model represents. So changing the mean, will make the "average" boundary the one having as parameter, the one specified by the mean. If we change the covariance, we introduce some dependance in the parameters of the decision boundary, which can cause the line parameters to have some ratios between them, which can reflects into a preferred direction or a preferred intercept. These effects are explained by figure \ref{img_effects_changing_mean} and \ref{img_effects_cov}.
 
 #### Changing covariance
 
+I experimented by changing the covariance matrix. Obviously it makes no sense for $M_0$ and neither for $M_1$ because it has only one parameter. The covariance I used was:
+
+$$ $$
+
+We can see a comparison between the model having independent parameters, and one having as covariance $\mathbf{C}$ in figure \ref{img_evidence_covariance_comparision}. 
+
+
+
+![Comparison for model 2 and 3 between when parameters are drawn independently ($M_2$ and $M_3$), and the one with a non diagonal covariance matrix ($M_2'$ and $M_3'$). Mean is zero in both cases.\label{img_evidence_covariance_comparision}](evidence_covariance_comparision.pdf)
+
 #### Changing mean
 
-![\label{img_evidence_mean_5}](images/evidence_m55_both.pdf) 
+The result of changing the mean to $5$, are depicted in figure \ref{img_evidence_mean_5}. First of all we can see that we have lost the symmetricity in the left plot, because having changed the mean, we encoded preference of the direction of the normal of the decision boundary towards the first quadrant, so we will prefer datasets for which negative $y_i$ lies "below" the line. One difference is therefore the distribution of probability over the linerly separable models.
+Moreover the right plot is a little bit squahsed toward the y axis and more irregular compared to the one of figure \ref{img_evidence_M00}. We can see a scaled version in figure \ref{img_evidence_mean_5_closer}. This effect is due to the fact the the magnitude of $\theta$ has increased because of the mean. As already discussed the magnitude of $\theta$ determines how strict the bounday is, in particular it will assign even less probability to non-linearly separable datasets compared to the original case, because the magnitude of $\theta$ acts as a multiplicative factor in the exponent of the sigmoid.
 
-![\label{img_evidence_mean_5_closer}](images/evidence_m55_closer.pdf) 
+![Evidence for each model in the unordered and ordered datasets\label{img_evidence_mean_5}](images/evidence_m55_both.pdf) 
 
----
+![Close up of the model evidence until the first 80 most probable datasets\label{img_evidence_mean_5_closer}](images/evidence_m55_closer.pdf) 
+
+![Samples of lines where the parameters are drawn from a normal distribution with the parameters specified in the title. Here all the parameters are assumed independent. We can see how changing the mean affects the resulting lines.\label{img_effects_changing_mean}](images/effects_of_mean.pdf) 
+
+![Samples of lines where the parameters are drawn from a normal distribution with mean zero. In the left plot $\theta_1$ and $\theta_2$ are equal while $\theta_3$ is independent.On the right the covariance matrix has $0.9$ in all the entries, except on the diagonal where it is $1$.\label{img_effects_cov}](images/effects_of_cov.pdf)
+
 
 \pagebreak
 
