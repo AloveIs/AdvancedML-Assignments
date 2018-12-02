@@ -1,4 +1,6 @@
 import numpy as np
+from math import sqrt
+from scipy.spatial.distance import cdist, pdist
 
 class GP_prior:
 
@@ -10,13 +12,15 @@ class GP_prior:
         self.mean = None
 
     def exp_kernel(self, X, Y):
-        x = np.matrix(X)
-        x = np.tile(x.transpose(),(1,Y.size))
-        m = np.subtract(x,Y)
-
-        M = np.multiply(m,m)
-        e = 1/(self.lenghtscale**2)
-        return (self.sigma**2) * np.exp(-e * M)
+        X = X[:,None]
+        Y = Y[:,None]
+        return (self.sigma**2) * np.exp(-cdist(X, Y, 'sqeuclidean')/(self.lenghtscale*self.lenghtscale))
+        #x = np.matrix(X)
+        #x = np.tile(x.transpose(),(1,Y.size))
+        #m = np.subtract(x,Y)
+        #M = np.multiply(m,m)
+        #e = 1.0/(self.lenghtscale**2)
+        #return (self.sigma**2) * np.exp(-e * M)
 
 
     def sample_function(self,inputs):
@@ -35,8 +39,9 @@ class GP_prior:
 
 class GP_posterior:
 
-    def __init__(self, err_var = 1,sigma=1, lenghtscale=1,diag_covar=0):
-        self.err_var = err_var
+    def __init__(self, var = 1,sigma=1, lenghtscale=1,diag_covar=0):
+        self.err_dev = sqrt(var)
+        self.err_var = var
         self.sigma = sigma
         self.lenghtscale = lenghtscale
         self.diag_covariance = diag_covar
@@ -46,33 +51,44 @@ class GP_posterior:
 
     def compute_prior(self):
         self.prior = GP_prior(self.sigma,self.lenghtscale)
-        self.prior.sample_function(self.data_x)
-
-        self.prior_covariance_inv = np.linalg.inv(self.prior.covariance + self.err_var * np.eye(self.prior.covariance.shape[0]))
+        #self.prior.sample_function(self.data_x)
+        self.prior.covariance = self.compute_kernel(self.data_x,self.data_x) + self.err_var * np.eye(self.data_x.size)
+        self.prior.mean = np.zeros(self.data_x.size)
+        self.prior_covariance_inv = np.linalg.inv(self.prior.covariance)
 
 
     def compute_kernel(self,X,Y=None):
         if Y is None:
             Y = self.data_x
 
-        x = np.matrix(X)
-        x = np.tile(x.transpose(),(1,Y.size))
-        m = np.subtract(x,Y)
+        X = X[:,None]
+        Y = Y[:,None]
+        return (self.sigma**2) * np.exp(-cdist(X, Y, 'sqeuclidean')/(self.lenghtscale*self.lenghtscale)) + self.diag_covariance * np.eye(X.size, Y.size)
 
-        M = np.multiply(m,m)
-        e = 1/(self.lenghtscale**2)
-        return (self.sigma**2) * np.exp(-e * M) + self.diag_covariance * np.eye(X.size, Y.size)
+        #x = np.matrix(X)
+        #x = np.tile(x.transpose(),(1,Y.size))
+        #m = np.subtract(x,Y)
+
+        #M = np.multiply(m,m)
+        #e = 1.0/(self.lenghtscale**2)
+        #return (self.sigma**2) * np.exp(-e * M) + self.diag_covariance * np.eye(X.size, Y.size)
 
 
 
     def sample_predictive_mean(self,x):
-        K = self.compute_kernel(x)
+        K = self.compute_kernel(x,self.data_x)
         T = np.matrix(self.data_t)
-        return np.dot(K,self.prior_covariance_inv.dot(T.T))
+        R = np.dot(K,np.dot(self.prior_covariance_inv,T.T))
+        return R
+
+    def sample_predictive_variance_errorfree(self,x):
+        K = self.compute_kernel(x,self.data_x)
+        C = self.compute_kernel(x,x) #+ self.err_var * np.eye(x.size)
+        return C - np.dot(K,np.dot(self.prior_covariance_inv,K.T))
 
 
     def sample_predictive_variance(self,x):
-        K = self.compute_kernel(x)
+        K = self.compute_kernel(x,self.data_x)
         C = self.compute_kernel(x,x) + self.err_var * np.eye(x.size)
         return C - np.dot(K,np.dot(self.prior_covariance_inv,K.T))
 
@@ -82,6 +98,6 @@ class GP_posterior:
         else:
             self.data_x = np.random.uniform(-4,6,9)
 
-        self.data_t = (2+np.power(0.5*self.data_x-1,2)) * np.sin(3*self.data_x) + np.random.normal(0, self.err_var, len(self.data_x))
+        self.data_t = (2+np.power(0.5*self.data_x-1,2)) * np.sin(3*self.data_x) + np.random.normal(0, self.err_dev, len(self.data_x))
         self.compute_prior()
         return (self.data_x, self.data_t)

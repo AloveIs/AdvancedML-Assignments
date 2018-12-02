@@ -16,7 +16,7 @@ header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left
  - Q8 ✔ to compare, maybe can expand
  - Q9 ✔
  - Q10 ✔
- - Q11
+ - Q11 ✔
 
  - Q12 ✔
  - Q13 ✔
@@ -26,7 +26,7 @@ header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left
 
  - Q17 ✔ why this is a good model?
  - Q18 ✔ put image
- - Q19 to finish
+ - Q19 ✔ to finish
  - Q20 ✔
  - Q21 ✔
  - Q22 ✔ if I have time review again
@@ -274,7 +274,24 @@ Since it divides the difference between two points, if the lenghtscale is low th
 
 ### Question 11
 
+![Samples from the predictive posterior for some $x$. In red are the known data points,\label{img_post_samples}](images/post_samples.pdf)
 
+If we don't have any data then the posterior is just the prior.
+In figure \ref{img_post_samples} we sample some points in some fixed location $x_i$ from the predictive distribution $p(t_i|D)$. Here we see that the further away we are from the data points, the higher the variance in my sampled points. This is because we are less certain about the value of the function there. While near the data points, the variance is quite low.
+
+We then plotted the predictive mean and variance in figure \ref{img_post_mean_cov} and \ref{img_post_mean_cov2}. Again the variance behaves as we described before. These function are better than the one drawn from the prior because they use the information of the data. These functions start behaving like the one drawn from the prior when they are outside the neighborhood of the data points.
+
+![Mean for the predictive posterior, with shaded area of $\pm \sigma$, the standard deviation.\label{img_post_mean_cov}](images/post_mean_cov.pdf)
+
+![Mean for the predictive posterior, with shaded area of $\pm \sigma$, the standard deviation.\label{img_post_mean_cov2}](images/post_mean_cov2.pdf)
+
+We can also sample some function from the posterior $p(f_i|\mathbf{D})$ which is easily obtained from the predictive posterior by removing the diagonal term due to noise. The results are in image \ref{img_sampled_functions}. We can see that the function follow a common trend near the data points, while far away they behave randomly. 
+
+![Sampled function from the posterior.\label{img_sampled_functions}](images/sampled_functions.pdf)
+
+We can investigate the effect of the diagonal term in the kernel function in figure \ref{img_diagonal_term}. Since it is a diagonal term it only adds uncertainty to each prediction variable $t_i$, increasing its variance, as we can see from the plot.
+
+![The top plot does not add a diagonal term to the kernel, the bottom one does.The parameter used are $\ell^2= 1 , \sigma^2=9$ and the diagonal term was scaled by a factor of $10$.\label{img_diagonal_term}](images/diagonal_term.pdf)
 
 \pagebreak
 
@@ -341,7 +358,7 @@ Again we can disregard the constant term at the begining, but we need to keep th
 
 $$\arg\max_W \left\{ -\frac{1}{2\sigma^2} \sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})} -\frac{1}{2\tau^2}\sum_i^N{(\mathbf{w_i})^T(\mathbf{w_i})}\right\}$$
 
-Where the second term acts as a reguralizing term.
+Where the second term acts as a reguralizing term, the $L_2$ norm we already talked about.
 
 #### Type II ML
 
@@ -478,13 +495,11 @@ Here we also have a bias term $\theta_3$, and the resulting line can have any or
 
 Each of these datasets cannot "explain" any non-linear dataset, while $M_0$ can. On the other hand these models are flexible because they have parameter that can be tuned to a particular subset of datasets.
 
-##### Put image here
-
 ### Question 19
 
-$M_3$ is the most flexible one because it can move its decision boundary however it wants, it can express any linear  decision boundary. In particular it can explain all the datasets of $M_1$ and $M_2$ (because both linear) plus some more, which means that it must allocate less probability mass over those datasets spanned also by $M_1$ and $M_2$. So the model pays this flexibility in less probability per each single dataset it "explains".
+$M_3$ is the most flexible one because it can move its decision boundary however it wants, it can express any linear boundary. In particular it can explain all the datasets of $M_1$ and $M_2$ (because both linear) plus some more, which means that it must allocate less probability mass over those datasets spanned also by $M_1$ and $M_2$ which is a somehow constraing. So the model pays this flexibility in less probability per each single dataset it "explains".
 The same consideration works for $M_2$ which is has more flexibility than $M_1$.
-Then $M_0$ 
+Then $M_0$ spread its probability over all dataset equally, which is the best a model can do to explain all dataset, but by doing so it does not leave any degree of freedom to move its probability on other datasets.
 
 ### Question 20
 
@@ -555,7 +570,7 @@ $$ \mathbf{C} = \sigma^2 \begin{pmatrix}
 For $M_2$ I restricted $\mathbf{C}$ to the top left $2\prod2$ square submatrix.
 We can see a comparison between the model having independent parameters, and one having as covariance $\mathbf{C}$ in figure \ref{img_evidence_covariance_comparision}. 
 
-![Comparison, in a restricted portion of the domain, for model 2 and 3 between when parameters are drawn independently ($M_2$ and $M_3$), and the one with a non diagonal covariance matrix ($M_2'$ and $M_3'$). Mean is zero in both cases.\label{img_evidence_covariance_comparision}](evidence_covariance_comparision.pdf)
+![Comparison, in a restricted portion of the domain, for model 2 and 3 between when parameters are drawn independently ($M_2$ and $M_3$), and the one with a non diagonal covariance matrix ($M_2'$ and $M_3'$). Mean is zero in both cases.\label{img_evidence_covariance_comparision}](images/evidence_covariance_comparision.pdf)
 
 If we compare $M_2$ with $M_2'$ we can see that they do not differ a lot in terms of dataset spanned, but puts a different probability mass on each of these. This means that the covarianc we choosed encodes some preferences for those models we have increased the probability.
 In comparing $M_3$ with $M_3'$ we can make the same considerations as before, but here we also have some sharp differences in the shape of the distribution. It might be that the bias enhance th probability of some datasets that were not considered as likely before.
