@@ -1,7 +1,7 @@
 ---
 title : Assignment 1 - Report 
 author : Pietro Alovisi
-date : 11-17-2018
+date : 11-31-2018
 header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left\lVert#1\right\rVert}
 ---
 <!--
