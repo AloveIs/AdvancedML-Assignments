@@ -1,7 +1,7 @@
 ---
 title : Assignment 1 - Report 
 author : Pietro Alovisi
-date : 11-17-2018
+date : 11-31-2018
 header-includes: \DeclareMathOperator{\EX}{\mathbb{E}} \newcommand\norm[1]{\left\lVert#1\right\rVert}
 ---
 <!--
@@ -192,6 +192,10 @@ So in the end the posterior is:
 
 $$\mathcal{N}(\mathbf{M},\mathbf{\Sigma},\mathbf{I})$$
 
+$$\mathbf{\Sigma} = (\frac{1}{\tau^2}\mathbf{I} + \frac{1}{\sigma^2} \mathbf{X}^T\mathbf{X})^{-1}$$
+
+$$M^T = \Sigma \cdot (\frac{1}{\sigma^2} \mathbf{X}^T \mathbf{T} +\frac{1}{\tau^2} W_0^T)$$
+
 Z represents the regularizing term for our posterior distribution and, from Bayes rule, it must be equal to the evidence. But we are not intrested in it for the computation of the posterior, and it does not affect our derivation since it does not depend on $\mathbf{W}$.
 The maximum likelihood approach gives a result that is the mean of the posterior when the prior is an uninformative one uniform distribution (we can think of this as having the $\tau^2 \to \infty$). So the resulting mean is then: 
 
@@ -342,7 +346,7 @@ In the maximization we disregard the constant factor $- log \left(\sigma^2(2\pi)
 
 $$\arg\max_W-\sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})}$$
 
-Which is clealy the generalization of the sum of residual square for vectorial outputs. 
+Which is clealy the generalization of the sum of residual square for vectorial outputs.
 
 
 #### MAP
@@ -352,11 +356,11 @@ $$log \left (p(\mathbf{Y}|\mathbf{X}, \mathbf{W})\cdot p(\mathbf{W})\right ) = l
 
 The first term of the summation is the MLE term from before, while the second one I have already computed in qustion 4 as:
 
-$$log(p(\mathbf{W})) = - log \left( \tau^2(2\pi)^{\frac{D}{2}}\right) -\frac{1}{2\tau^2}\sum_i^N{(\mathbf{w_i})^T(\mathbf{w_i})}$$ 
+$$log(p(\mathbf{W})) = - log \left( \tau^2(2\pi)^{\frac{D}{2}}\right) -\frac{1}{2\tau^2}\sum_i^D{(\mathbf{w_i})^T(\mathbf{w_i})}$$ 
 
 Again we can disregard the constant term at the begining, but we need to keep the multiplicative terms both for the prior and for the least square. Putting everything together we get:
 
-$$\arg\max_W \left\{ -\frac{1}{2\sigma^2} \sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})} -\frac{1}{2\tau^2}\sum_i^N{(\mathbf{w_i})^T(\mathbf{w_i})}\right\}$$
+$$\arg\max_W \left\{ -\frac{1}{2\sigma^2} \sum_i^N{(\mathbf{Wx_i-t_i})^T(\mathbf{Wx_i-t_i})} -\frac{1}{2\tau^2}\sum_i^D{(\mathbf{w_i})^T(\mathbf{w_i})}\right\}$$
 
 Where the second term acts as a reguralizing term, the $L_2$ norm we already talked about.
 
@@ -369,12 +373,18 @@ $$ = \sum_{i=0}^{N} log \left( p(\mathbf{y_i}|\mathbf{x_i}, \mathbf{W})\right)  
 
 If we substitute with the expression for $p(\mathbf{y_i}|\mathbf{x_i}, \mathbf{W})$ we still have a log of a normal distribution.
 
-$$ = - \sum_{i=0}^{N} log \left((det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}) 2\pi^D)^{\frac{1}{2}} \right) -\sum_{i=0}^{N}{\mathbf{y_i}^T (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \mathbf{y_i} }$$
+$$ = - \sum_{i=0}^{N} log \left((det(\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I}) 2\pi^D)^{\frac{1}{2}} \right) - \frac{1}{2} \sum_{i=0}^{N}{\mathbf{y_i}^T (\mathbf{W}\mathbf{W}^T + \sigma^2 \mathbf{I})^{-1} \mathbf{y_i} }$$
+
+This terms seek the $W$ that maximizes the covariance of the observed data points $\mathbf{y_i}$.
+
 ---
 
-The two expression in equation 25 are equal because the denominator (the evidence) is constant for any choice of the model parameter $W$. The evidence only changes if we choose another model.
+As we get more data MLE and MAP change their estimate for the optimal $W$, MAP does that slowly because it also has a belief the, expecially when we have not so much data, infulences a lot the estimate for $W$.
+In type-II Maximum-Likelihood we sum up the contributions of each new data point in the second term of its derived formula.
 
-Type-II Maximum-Likelihood is a sensible way of learning the parameters because we first use the bayesian approach to avoid the overfit on data, and then we maximize the hyperparameter, which cannot overfit, because it is not backed by data.
+The two expression in equation 25 are equal because the denominator (the evidence) is constant for any choice of the model parameter $W$, and a multiplicative (positive) term does not chabge the optimization proble. The evidence only changes if we choose another model.
+
+Type-II Maximum-Likelihood is a sensible way of learning the parameters because we first use the bayesian approach to avoid the overfit on data, and then we maximize the hyperparameter, which cannot overfit, because it is not backed by data. Also because here we do not have the data for the $X$, and so the only thing we can do is marginalize them out.
 
 ### Question 15
 
