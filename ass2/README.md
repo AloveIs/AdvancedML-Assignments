@@ -1,1 +1,4 @@
-The code is in the lib folder.
+# README
+
+The code is in the `src` folder.
+
